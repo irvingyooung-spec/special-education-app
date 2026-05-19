@@ -9,6 +9,11 @@ const PUBLIC_PREFIXES = ["/q/"];
 export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
+  // 静态资源直接放行
+  if (/\.(png|jpg|jpeg|gif|svg|ico|webp|woff|woff2|ttf|otf|css|js|json)$/.test(pathname)) {
+    return NextResponse.next();
+  }
+
   // 公开路径直接放行
   if (PUBLIC_EXACT.has(pathname)) return NextResponse.next();
   if (PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) {
