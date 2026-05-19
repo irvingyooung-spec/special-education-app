@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 interface LogoProps {
   size?: "sm" | "md" | "lg";
   className?: string;
@@ -14,12 +12,11 @@ const sizeMap = {
 export default function Logo({ size = "md", className = "" }: LogoProps) {
   const dims = sizeMap[size];
   return (
-    <Image
+    <img
       src="/logo.png"
       alt="新芽儿童乐园"
       width={dims.width}
       height={dims.height}
-      priority
       className={`object-contain ${className}`}
     />
   );
