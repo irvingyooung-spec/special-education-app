@@ -72,7 +72,7 @@ export default function ChatPanel({ childId, childName, initialMessages }: Props
   }
 
   return (
-    <div className="flex h-[calc(100vh-160px)] flex-col">
+    <div className="flex h-full flex-col">
       {/* 消息列表 */}
       <div className="flex-1 overflow-y-auto space-y-4 px-4 py-4">
         {messages.length === 0 && (

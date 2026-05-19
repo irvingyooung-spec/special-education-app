@@ -40,22 +40,21 @@ export default async function ChatPage({ params }: Props) {
   return (
     <div className="min-h-screen bg-warm-bg">
       <header className="bg-white shadow-sm">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-4">
-          <div>
-            <Link
-              href={`/parent/${childId}`}
-              className="text-sm text-brand hover:underline"
-            >
-              ← 返回{child.name}的详情页
-            </Link>
-            <h1 className="mt-1 text-xl font-bold text-[#374151]">
-              芽宝 · {child.name}
-            </h1>
-          </div>
+        <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
+          <Link
+            href={`/parent/${childId}`}
+            className="text-sm text-brand hover:underline"
+          >
+            ← 返回
+          </Link>
+          <h1 className="text-lg font-bold text-[#374151]">
+            芽宝 · {child.name}
+          </h1>
+          <div className="w-12" />
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl">
+      <main className="mx-auto max-w-3xl h-[calc(100dvh-56px)]">
         <ChatPanel
           childId={childId}
           childName={child.name}

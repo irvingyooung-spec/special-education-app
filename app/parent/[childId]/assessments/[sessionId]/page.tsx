@@ -1,11 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import db from "@/lib/db";
-import {
-  destroyCurrentSession,
-  requireRole,
-  roleLabel,
-} from "@/lib/auth";
+import { requireRole } from "@/lib/auth";
 import { ABLLS_DOMAINS, ABLLS_SCORE_LEVELS } from "@/lib/ablls-catalog";
 import {
   getScoresForSession,
@@ -56,53 +52,24 @@ export default async function ParentAssessmentSessionPage({ params }: Props) {
     scoresByDomain.set(s.domain_code, list);
   }
 
-  async function logout() {
-    "use server";
-    await destroyCurrentSession();
-    redirect("/login");
-  }
-
   return (
     <div className="min-h-screen bg-warm-bg">
       <header className="bg-white shadow-sm">
-        <div className="mx-auto flex max-w-4xl items-start justify-between px-4 py-6">
-          <div>
-            <Link
-              href={`/parent/${childId}/assessments`}
-              className="text-sm text-brand hover:underline"
-            >
-              ← 返回评估历史
-            </Link>
-            <h1 className="mt-2 text-2xl font-bold text-[#374151]">
-              评估详情 — {child.name}
-            </h1>
-            <p className="mt-1 text-sm text-[#9ca3af]">
-              {new Date(session.created_at).toLocaleString("zh-CN")}
-              {session.evaluator_name &&
-                ` · 评估师 ${session.evaluator_name}`}
-              {" · "}共评 {scores.length} / 92 项
-            </p>
-          </div>
-          <div className="flex items-center gap-3 text-sm">
-            <span className="text-[#6b7280]">
-              {user.username}{" "}
-              <span className="text-xs text-[#9ca3af]">
-                ({roleLabel[user.role]})
-              </span>
-            </span>
-            <form action={logout}>
-              <button
-                type="submit"
-                className="text-brand hover:underline"
-              >
-                退出
-              </button>
-            </form>
-          </div>
+        <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3">
+          <Link
+            href={`/parent/${childId}/assessments`}
+            className="text-sm text-brand hover:underline"
+          >
+            ← 返回
+          </Link>
+          <h1 className="text-lg font-bold text-[#374151]">
+            评估详情
+          </h1>
+          <div className="w-12" />
         </div>
       </header>
 
-      <main className="mx-auto max-w-4xl px-4 py-8 space-y-6">
+      <main className="mx-auto max-w-4xl px-4 py-6 space-y-6 pb-20">
         {session.session_notes && (
           <section className="rounded-xl border border-[#e8e8e0] bg-white p-6 shadow-sm">
             <h2 className="mb-2 text-base font-semibold text-[#374151]">

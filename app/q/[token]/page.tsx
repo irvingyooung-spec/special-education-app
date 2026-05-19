@@ -196,7 +196,7 @@ export default async function ParentQuestionnairePage({
                   name="parent_name"
                   required
                   defaultValue={q.parent_name ?? ""}
-                  className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                  className="mt-1 block w-full min-h-[44px] rounded-lg border border-[#d1d5db] px-3 py-2.5 text-sm text-[#374151] placeholder:text-[#9ca3af] focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </div>
 
@@ -212,7 +212,7 @@ export default async function ParentQuestionnairePage({
                     id="relation"
                     name="relation"
                     defaultValue={q.relation ?? ""}
-                    className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                    className="mt-1 block w-full min-h-[44px] rounded-lg border border-[#d1d5db] px-3 py-2.5 text-sm text-[#374151] placeholder:text-[#9ca3af] focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                   >
                     <option value="">请选择</option>
                     <option value="父亲">父亲</option>
@@ -233,7 +233,7 @@ export default async function ParentQuestionnairePage({
                     id="contact"
                     name="contact"
                     defaultValue={q.contact ?? ""}
-                    className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                    className="mt-1 block w-full min-h-[44px] rounded-lg border border-[#d1d5db] px-3 py-2.5 text-sm text-[#374151] placeholder:text-[#9ca3af] focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                   />
                 </div>
               </div>
@@ -253,13 +253,13 @@ export default async function ParentQuestionnairePage({
                   </label>
                   <div className="mt-2 flex gap-4 text-sm text-[#6b7280]">
                     {["男", "女", "其他"].map((g) => (
-                      <label key={g} className="flex items-center gap-1.5">
+                      <label key={g} className="flex items-center gap-2 py-1">
                         <input
                           type="radio"
                           name="child_gender"
                           value={g}
                           defaultChecked={defaultGender === g}
-                          className="h-4 w-4 text-brand"
+                          className="h-5 w-5 text-brand"
                         />
                         {g}
                       </label>
@@ -278,7 +278,7 @@ export default async function ParentQuestionnairePage({
                     id="child_birth_date"
                     name="child_birth_date"
                     defaultValue={defaultBirthDate}
-                    className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                    className="mt-1 block w-full min-h-[44px] rounded-lg border border-[#d1d5db] px-3 py-2.5 text-sm text-[#374151] placeholder:text-[#9ca3af] focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                   />
                 </div>
               </div>
@@ -306,7 +306,7 @@ export default async function ParentQuestionnairePage({
                   id="diagnosis"
                   name="diagnosis"
                   defaultValue={q.diagnosis ?? ""}
-                  className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                  className="mt-1 block w-full min-h-[44px] rounded-lg border border-[#d1d5db] px-3 py-2.5 text-sm text-[#374151] placeholder:text-[#9ca3af] focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
@@ -322,7 +322,7 @@ export default async function ParentQuestionnairePage({
                     id="diagnosis_hospital"
                     name="diagnosis_hospital"
                     defaultValue={q.diagnosis_hospital ?? ""}
-                    className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                    className="mt-1 block w-full min-h-[44px] rounded-lg border border-[#d1d5db] px-3 py-2.5 text-sm text-[#374151] placeholder:text-[#9ca3af] focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                   />
                 </div>
                 <div>
@@ -337,7 +337,7 @@ export default async function ParentQuestionnairePage({
                     id="diagnosis_date"
                     name="diagnosis_date"
                     defaultValue={q.diagnosis_date ?? ""}
-                    className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                    className="mt-1 block w-full min-h-[44px] rounded-lg border border-[#d1d5db] px-3 py-2.5 text-sm text-[#374151] placeholder:text-[#9ca3af] focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                   />
                 </div>
               </div>
@@ -365,7 +365,7 @@ export default async function ParentQuestionnairePage({
                   name="current_training"
                   rows={2}
                   defaultValue={q.current_training ?? ""}
-                  className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                  className="mt-1 block w-full min-h-[44px] rounded-lg border border-[#d1d5db] px-3 py-2.5 text-sm text-[#374151] placeholder:text-[#9ca3af] focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </div>
               <div>
@@ -381,7 +381,7 @@ export default async function ParentQuestionnairePage({
                   name="prior_training"
                   rows={2}
                   defaultValue={q.prior_training ?? ""}
-                  className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                  className="mt-1 block w-full min-h-[44px] rounded-lg border border-[#d1d5db] px-3 py-2.5 text-sm text-[#374151] placeholder:text-[#9ca3af] focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </div>
               <div>
@@ -399,7 +399,7 @@ export default async function ParentQuestionnairePage({
                   name="medication"
                   rows={2}
                   defaultValue={q.medication ?? ""}
-                  className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                  className="mt-1 block w-full min-h-[44px] rounded-lg border border-[#d1d5db] px-3 py-2.5 text-sm text-[#374151] placeholder:text-[#9ca3af] focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </div>
               <div>
@@ -415,7 +415,7 @@ export default async function ParentQuestionnairePage({
                   name="allergies"
                   defaultValue={q.allergies ?? ""}
                   placeholder="无 或 具体说明"
-                  className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                  className="mt-1 block w-full min-h-[44px] rounded-lg border border-[#d1d5db] px-3 py-2.5 text-sm text-[#374151] placeholder:text-[#9ca3af] focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </div>
             </div>
@@ -442,7 +442,7 @@ export default async function ParentQuestionnairePage({
                   name="daily_behavior"
                   rows={4}
                   defaultValue={q.daily_behavior ?? ""}
-                  className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                  className="mt-1 block w-full min-h-[44px] rounded-lg border border-[#d1d5db] px-3 py-2.5 text-sm text-[#374151] placeholder:text-[#9ca3af] focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </div>
               <div>
@@ -460,7 +460,7 @@ export default async function ParentQuestionnairePage({
                   name="main_reinforcers"
                   rows={2}
                   defaultValue={q.main_reinforcers ?? ""}
-                  className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                  className="mt-1 block w-full min-h-[44px] rounded-lg border border-[#d1d5db] px-3 py-2.5 text-sm text-[#374151] placeholder:text-[#9ca3af] focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </div>
               <div>
@@ -479,7 +479,7 @@ export default async function ParentQuestionnairePage({
                   name="prior_assessment"
                   defaultValue={q.prior_assessment ?? ""}
                   placeholder="例如:2025-06,使用 PEP-3"
-                  className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                  className="mt-1 block w-full min-h-[44px] rounded-lg border border-[#d1d5db] px-3 py-2.5 text-sm text-[#374151] placeholder:text-[#9ca3af] focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </div>
             </div>
@@ -506,7 +506,7 @@ export default async function ParentQuestionnairePage({
                   name="top_concerns"
                   rows={3}
                   defaultValue={q.top_concerns ?? ""}
-                  className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                  className="mt-1 block w-full min-h-[44px] rounded-lg border border-[#d1d5db] px-3 py-2.5 text-sm text-[#374151] placeholder:text-[#9ca3af] focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </div>
               <div>
@@ -525,13 +525,13 @@ export default async function ParentQuestionnairePage({
                   rows={4}
                   required
                   defaultValue={q.parent_expectations ?? ""}
-                  className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                  className="mt-1 block w-full min-h-[44px] rounded-lg border border-[#d1d5db] px-3 py-2.5 text-sm text-[#374151] placeholder:text-[#9ca3af] focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </div>
             </div>
           </section>
 
-          <div className="sticky bottom-4 z-10 rounded-xl border border-[#e8e8e0] bg-white p-4 shadow-sm">
+          <div className="sticky bottom-6 z-10 rounded-xl border border-[#e8e8e0] bg-white p-4 shadow-lg">
             <button
               type="submit"
               className="w-full rounded-lg bg-brand px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-dark transition-all duration-200 active:scale-[0.98]"

@@ -1,11 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import db from "@/lib/db";
-import {
-  destroyCurrentSession,
-  requireRole,
-  roleLabel,
-} from "@/lib/auth";
+import { requireRole } from "@/lib/auth";
 import {
   addDays,
   bucketByDay,
@@ -76,47 +72,24 @@ export default async function ParentSchedulePage({
   const todayMonday = getMonday(new Date());
   const isCurrentWeek = dayKey(weekStart) === dayKey(todayMonday);
 
-  async function logout() {
-    "use server";
-    await destroyCurrentSession();
-    redirect("/login");
-  }
-
   return (
     <div className="min-h-screen bg-warm-bg">
       <header className="bg-white shadow-sm">
-        <div className="mx-auto flex max-w-5xl items-start justify-between px-4 py-6">
-          <div>
-            <Link
-              href={`/parent/${childId}`}
-              className="text-sm text-brand hover:underline"
-            >
-              ← 返回{child.name}的主页
-            </Link>
-            <h1 className="mt-2 text-2xl font-bold text-[#374151]">
-              课表 — {child.name}
-            </h1>
-          </div>
-          <div className="flex items-center gap-3 text-sm">
-            <span className="text-[#6b7280]">
-              {user.username}{" "}
-              <span className="text-xs text-[#9ca3af]">
-                ({roleLabel[user.role]})
-              </span>
-            </span>
-            <form action={logout}>
-              <button
-                type="submit"
-                className="text-brand hover:underline"
-              >
-                退出
-              </button>
-            </form>
-          </div>
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
+          <Link
+            href={`/parent/${childId}`}
+            className="text-sm text-brand hover:underline"
+          >
+            ← 返回
+          </Link>
+          <h1 className="text-lg font-bold text-[#374151]">
+            课表
+          </h1>
+          <div className="w-12" />
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-4 py-8 space-y-6">
+      <main className="mx-auto max-w-5xl px-4 py-6 space-y-6 pb-20">
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#e8e8e0] bg-white p-4 shadow-sm">
           <div className="flex items-center gap-2">
             <Link

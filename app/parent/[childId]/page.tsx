@@ -121,9 +121,9 @@ export default async function ParentChildPage({ params }: Props) {
       subtitle={subtitleMeta}
       maxWidth="md"
       action={headerAction}
-      showLogo
+      showLogo={false}
     >
-      <div className="space-y-6">
+      <div className="space-y-6 pb-20">
         <Card title="基本信息" icon={Baby}>
           <div className="grid gap-3 sm:grid-cols-3 mb-4 text-sm">
             <div>
