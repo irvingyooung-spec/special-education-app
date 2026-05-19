@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import db from "@/lib/db";
 import { requireRole } from "@/lib/auth";
+import SubmitButton from "@/app/components/submit-button";
 import {
   ABLLS_DOMAINS,
   ABLLS_SCORE_LEVELS,
@@ -122,7 +123,7 @@ export default async function AssessPage({ params }: Props) {
     });
     const sessionId = tx();
 
-    redirect(`/children/${childId}/assessments/${sessionId}`);
+    redirect(`/children/${childId}/assessments/${sessionId}?toast=success&message=评估已保存`);
   }
 
   return (
@@ -461,12 +462,7 @@ export default async function AssessPage({ params }: Props) {
             >
               取消
             </Link>
-            <button
-              type="submit"
-              className="rounded-lg bg-brand px-6 py-2 text-sm font-medium text-white hover:bg-brand-dark transition-all duration-200 active:scale-[0.98]"
-            >
-              保存评估
-            </button>
+            <SubmitButton label="保存评估" loadingLabel="保存中..." />
             <span className="ml-auto text-xs text-[#9ca3af]">
               未选评分的项不会写入数据库,可以分多次评估
             </span>

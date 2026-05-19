@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import db from "@/lib/db";
 import { requireRole } from "@/lib/auth";
+import SubmitButton from "@/app/components/submit-button";
 
 export default async function NewChildPage() {
   await requireRole("teacher", "admin");
@@ -34,7 +35,7 @@ export default async function NewChildPage() {
         parent_expectations
       );
 
-    redirect(`/children/${result.lastInsertRowid}`);
+    redirect(`/?toast=success&message=学生已添加`);
   }
 
   return (
@@ -154,12 +155,7 @@ export default async function NewChildPage() {
             >
               取消
             </Link>
-            <button
-              type="submit"
-              className="rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-dark transition-all duration-200 active:scale-[0.98]"
-            >
-              保存
-            </button>
+            <SubmitButton label="保存" loadingLabel="保存中..." />
           </div>
         </form>
       </main>

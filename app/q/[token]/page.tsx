@@ -141,7 +141,7 @@ export default async function ParentQuestionnairePage({
       );
     }
 
-    redirect(`/q/${token}?saved=1`);
+    redirect(`/q/${token}?toast=success&message=${encodeURIComponent("已提交成功，感谢您的配合！")}`);
   }
 
   return (

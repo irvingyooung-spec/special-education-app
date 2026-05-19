@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import db from "@/lib/db";
 import { requireRole } from "@/lib/auth";
+import SubmitButton from "@/app/components/submit-button";
 import {
   addDays,
   bucketByDay,
@@ -115,6 +117,8 @@ export default async function ScheduleHubPage({ searchParams }: Props) {
       for (const cid of cids) insertLink.run(result.lastInsertRowid, cid);
     });
     tx(childIds);
+
+    redirect(`/schedule?week=${dayKey(start)}&toast=success&message=课程已添加`);
   }
 
   async function deleteCourse(formData: FormData) {
@@ -342,12 +346,7 @@ export default async function ScheduleHubPage({ searchParams }: Props) {
                   className="block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </div>
-              <button
-                type="submit"
-                className="rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-dark transition-all duration-200 active:scale-[0.98]"
-              >
-                添加课程
-              </button>
+              <SubmitButton label="添加课程" loadingLabel="添加中..." />
             </form>
           )}
         </section>

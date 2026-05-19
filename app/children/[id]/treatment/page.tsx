@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 import db from "@/lib/db";
 import { requireRole } from "@/lib/auth";
+import SubmitButton from "@/app/components/submit-button";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -49,7 +50,7 @@ export default async function TreatmentPage({ params }: Props) {
       ).run(childId, content);
     }
 
-    redirect(`/children/${childId}`);
+    redirect(`/children/${childId}?toast=success&message=治疗计划已保存`);
   }
 
   return (
@@ -98,12 +99,7 @@ export default async function TreatmentPage({ params }: Props) {
             >
               取消
             </Link>
-            <button
-              type="submit"
-              className="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 transition-all duration-200 active:scale-[0.98]"
-            >
-              保存计划
-            </button>
+            <SubmitButton label="保存计划" loadingLabel="保存中..." />
           </div>
         </form>
       </main>

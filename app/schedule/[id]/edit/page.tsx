@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import db from "@/lib/db";
 import { requireRole } from "@/lib/auth";
+import SubmitButton from "@/app/components/submit-button";
 import { dayKey, formatTimeOnly, type ScheduleRow } from "@/lib/schedule";
 
 interface Props {
@@ -71,7 +72,7 @@ export default async function EditSchedulePage({ params }: Props) {
     });
     tx();
 
-    redirect(`/schedule?week=${dayKey(start)}`);
+    redirect(`/schedule?week=${dayKey(start)}&toast=success&message=课程已保存`);
   }
 
   return (
@@ -188,12 +189,7 @@ export default async function EditSchedulePage({ params }: Props) {
             >
               取消
             </Link>
-            <button
-              type="submit"
-              className="rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-dark transition-all duration-200 active:scale-[0.98]"
-            >
-              保存修改
-            </button>
+            <SubmitButton label="保存修改" loadingLabel="保存中..." />
           </div>
         </form>
       </main>

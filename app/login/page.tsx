@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { User, Lock } from "lucide-react";
 import db from "@/lib/db";
 import Logo from "@/app/components/logo";
+import SubmitButton from "@/app/components/submit-button";
 import {
   createSession,
   getCurrentUser,
@@ -11,7 +12,7 @@ import {
 } from "@/lib/auth";
 
 interface Props {
-  searchParams: Promise<{ error?: string; next?: string }>;
+  searchParams: Promise<{ toast?: string; message?: string; next?: string }>;
 }
 
 function safeNext(next: string | undefined): string | null {
@@ -22,7 +23,6 @@ function safeNext(next: string | undefined): string | null {
 
 export default async function LoginPage({ searchParams }: Props) {
   const search = await searchParams;
-  const errorMsg = search.error;
   const next = safeNext(search.next);
 
   const user = await getCurrentUser();
@@ -40,7 +40,7 @@ export default async function LoginPage({ searchParams }: Props) {
     );
 
     if (!username || !password) {
-      redirect(buildLoginRedirect("empty", nextFromForm));
+      redirect(buildLoginRedirect("error", "请填写用户名和密码", nextFromForm));
     }
 
     const row = db
@@ -52,7 +52,7 @@ export default async function LoginPage({ searchParams }: Props) {
       | undefined;
 
     if (!row || !(await verifyPassword(password, row.password_hash))) {
-      redirect(buildLoginRedirect("invalid", nextFromForm));
+      redirect(buildLoginRedirect("error", "用户名或密码错误", nextFromForm));
     }
 
     await createSession(row.id);
@@ -65,14 +65,6 @@ export default async function LoginPage({ searchParams }: Props) {
         <div className="flex justify-center mb-8">
           <Logo size="lg" />
         </div>
-
-        {errorMsg && (
-          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-            {errorMsg === "invalid"
-              ? "用户名或密码错误"
-              : "请填写用户名和密码"}
-          </div>
-        )}
 
         <form
           action={login}
@@ -133,12 +125,7 @@ export default async function LoginPage({ searchParams }: Props) {
             </label>
           </div>
 
-          <button
-            type="submit"
-            className="w-full rounded-lg bg-brand px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-dark transition-all duration-200 active:scale-[0.98]"
-          >
-            登录
-          </button>
+          <SubmitButton label="登录" loadingLabel="登录中..." className="w-full" />
         </form>
 
         <p className="mt-4 text-center text-xs text-[#9ca3af]">
@@ -150,8 +137,8 @@ export default async function LoginPage({ searchParams }: Props) {
   );
 }
 
-function buildLoginRedirect(error: string, next: string | null): string {
-  const params = new URLSearchParams({ error });
+function buildLoginRedirect(toast: string, message: string, next: string | null): string {
+  const params = new URLSearchParams({ toast, message });
   if (next) params.set("next", next);
   return `/login?${params.toString()}`;
 }
