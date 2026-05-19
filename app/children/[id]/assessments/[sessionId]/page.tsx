@@ -98,12 +98,12 @@ export default async function AssessmentSessionPage({
       <main className="mx-auto max-w-4xl px-4 py-8 space-y-6">
         {sp.err && (
           <div className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-800">
-            AI 生成失败:{sp.err}
+            芽宝生成失败:{sp.err}
           </div>
         )}
         {sp.ok === "generated" && (
           <div className="rounded-md border border-green-200 bg-green-50 p-4 text-sm text-green-800">
-            ✓ AI 报告草稿已生成。请审核后再发布给家长。
+            ✓ 芽宝生成的报告草稿已就绪。请审核后再发布给家长。
           </div>
         )}
 
@@ -119,17 +119,17 @@ export default async function AssessmentSessionPage({
           </section>
         )}
 
-        {/* AI 评估报告 */}
+        {/* 芽宝评估报告 */}
         <section className="rounded-lg border border-purple-200 bg-purple-50/30 p-6 shadow-sm">
           <div className="flex items-start justify-between mb-3">
             <div>
               <h2 className="text-lg font-semibold text-gray-800">
-                AI 评估报告草稿
+                芽宝评估报告草稿
               </h2>
               <p className="mt-1 text-xs text-gray-500">
                 由 {aiModelName} 基于本次得分 + 家长问卷生成。
                 <strong className="text-purple-800">老师必须人工审核后才能发布给家长</strong>;
-                AI 不提供医学诊断与用药建议。
+                芽宝不提供医学诊断与用药建议。
               </p>
             </div>
             <div className="flex gap-2">
@@ -146,7 +146,7 @@ export default async function AssessmentSessionPage({
                   type="submit"
                   className="rounded-md bg-purple-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-purple-700 disabled:opacity-50"
                 >
-                  {report ? "重新生成草稿" : "AI 生成报告草稿"}
+                  {report ? "重新生成草稿" : "让芽宝生成报告草稿"}
                 </button>
               </form>
             </div>
@@ -154,7 +154,7 @@ export default async function AssessmentSessionPage({
 
           {!report ? (
             <p className="mt-2 text-sm text-gray-500">
-              还没有生成报告。点击右上角"AI 生成报告草稿"按钮(大约需要 15-30 秒)。
+              还没有生成报告。点击右上角"让芽宝生成报告草稿"按钮(大约需要 15-30 秒)。
             </p>
           ) : (
             <div className="space-y-4">

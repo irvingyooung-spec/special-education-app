@@ -55,7 +55,7 @@ export default function ChatPanel({ childId, childName, initialMessages }: Props
       <div className="flex-1 overflow-y-auto space-y-4 px-4 py-4">
         {messages.length === 0 && (
           <div className="text-center text-gray-400 py-12">
-            <p className="text-lg mb-2">👋 你好,我是特教 AI 助手</p>
+            <p className="text-lg mb-2">👋 你好,我是芽宝</p>
             <p className="text-sm">
               我可以帮你了解 {childName} 的评估结果、训练建议、居家干预方法等。
               <br />
@@ -90,7 +90,7 @@ export default function ChatPanel({ childId, childName, initialMessages }: Props
                 <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-gray-400" style={{ animationDelay: "0ms" }} />
                 <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-gray-400" style={{ animationDelay: "150ms" }} />
                 <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-gray-400" style={{ animationDelay: "300ms" }} />
-                <span className="ml-1">AI 正在思考...</span>
+                <span className="ml-1">芽宝正在思考...</span>
               </div>
             </div>
           </div>
@@ -125,7 +125,7 @@ export default function ChatPanel({ childId, childName, initialMessages }: Props
           </button>
         </form>
         <p className="mt-2 text-center text-xs text-gray-400">
-          AI 回答仅供参考,不构成医疗诊断或用药建议
+          芽宝的回答仅供参考,不构成医疗诊断或用药建议
         </p>
       </div>
     </div>

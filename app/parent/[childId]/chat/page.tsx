@@ -49,7 +49,7 @@ export default async function ChatPage({ params }: Props) {
               ← 返回{child.name}的详情页
             </Link>
             <h1 className="mt-1 text-xl font-bold text-gray-900">
-              AI 助手 · {child.name}
+              芽宝 · {child.name}
             </h1>
           </div>
         </div>

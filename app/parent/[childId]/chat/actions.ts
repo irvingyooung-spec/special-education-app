@@ -4,8 +4,8 @@ import { getCurrentUser } from "@/lib/auth";
 import { chatWithAssistant } from "@/lib/chat";
 
 /**
- * 家长发送消息给 AI 助手。
- * 返回 AI 的完整回复文本。
+ * 家长发送消息给芽宝。
+ * 返回芽宝的完整回复文本。
  */
 export async function sendChatMessage(
   childId: number,

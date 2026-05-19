@@ -8,8 +8,8 @@ const baseURL = process.env.DEEPSEEK_BASE_URL ?? "https://api.deepseek.com";
 const model = process.env.DEEPSEEK_MODEL ?? "deepseek-chat";
 
 if (!apiKey) {
-  // 不在模块加载阶段抛错,只在真正调用 AI 时再说,避免开发服务器整体起不来
-  console.warn("[ai] DEEPSEEK_API_KEY 未设置,AI 功能不可用");
+  // 不在模块加载阶段抛错,只在真正调用芽宝时再说,避免开发服务器整体起不来
+  console.warn("[ai] DEEPSEEK_API_KEY 未设置,芽宝功能不可用");
 }
 
 const client = new OpenAI({
@@ -31,7 +31,7 @@ export async function generate(
   options: { temperature?: number; maxTokens?: number } = {}
 ): Promise<string> {
   if (!apiKey) {
-    throw new Error("AI 服务未配置:缺少 DEEPSEEK_API_KEY");
+    throw new Error("芽宝服务未配置:缺少 DEEPSEEK_API_KEY");
   }
 
   const resp = await client.chat.completions.create({
@@ -43,7 +43,7 @@ export async function generate(
 
   const text = resp.choices[0]?.message?.content;
   if (!text) {
-    throw new Error("AI 返回内容为空");
+    throw new Error("芽宝返回内容为空");
   }
   return text;
 }
@@ -57,7 +57,7 @@ export async function* generateStream(
   options: { temperature?: number; maxTokens?: number } = {}
 ): AsyncGenerator<string, void, unknown> {
   if (!apiKey) {
-    throw new Error("AI 服务未配置:缺少 DEEPSEEK_API_KEY");
+    throw new Error("芽宝服务未配置:缺少 DEEPSEEK_API_KEY");
   }
 
   const stream = await client.chat.completions.create({

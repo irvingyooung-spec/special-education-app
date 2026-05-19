@@ -268,15 +268,15 @@ export default async function ParentChildPage({ params }: Props) {
           <p className="mt-2 text-sm text-gray-500">按周查看孩子的课程安排</p>
         </section>
 
-        {/* AI 助手 */}
+        {/* 芽宝 */}
         <section className="rounded-lg border border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50 p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-lg font-semibold text-purple-900">
-                🤖 AI 特教助手
+                🌱 芽宝
               </h2>
               <p className="mt-1 text-sm text-purple-700">
-                有问题随时问 AI,它会结合孩子的档案给你个性化建议
+                有问题随时问芽宝,它会结合孩子的档案给你个性化建议
               </p>
             </div>
             <Link

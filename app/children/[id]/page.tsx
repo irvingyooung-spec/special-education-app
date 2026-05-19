@@ -250,10 +250,10 @@ export default async function ChildDetailPage({ params }: Props) {
           )}
         </section>
 
-        {/* 家长 AI 对话历史 */}
+        {/* 家长与芽宝的聊天记录 */}
         <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-800">家长 AI 对话</h2>
+            <h2 className="text-lg font-semibold text-gray-800">家长与芽宝的聊天记录</h2>
             <Link
               href={`/children/${childId}/chat`}
               className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
@@ -262,7 +262,7 @@ export default async function ChildDetailPage({ params }: Props) {
             </Link>
           </div>
           <p className="text-sm text-gray-500">
-            查看家长与 AI 助手的全部对话记录
+            查看家长与芽宝的全部对话记录
           </p>
         </section>
 

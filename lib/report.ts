@@ -42,7 +42,7 @@ export function getReportForSession(sessionId: number): AssessmentReport | null 
 }
 
 /**
- * 评估场景的家长问卷字段(用于喂给 AI)。所有字段可空。
+ * 评估场景的家长问卷字段(用于喂给芽宝)。所有字段可空。
  */
 type Questionnaire = {
   parent_name: string | null;
@@ -66,7 +66,7 @@ type ChildBasics = {
 };
 
 /**
- * 拼接喂给 AI 的"用户提示词":孩子基本信息 + 家长问卷 + 本次评估各项得分。
+ * 拼接喂给芽宝的"用户提示词":孩子基本信息 + 家长问卷 + 本次评估各项得分。
  */
 function buildUserPrompt(
   child: ChildBasics,
@@ -115,7 +115,7 @@ function buildUserPrompt(
     }
   }
 
-  // 按领域列出每项的得分明细,让 AI 能给针对性建议
+  // 按领域列出每项的得分明细,让芽宝能给针对性建议
   const scoresByDomain = new Map<string, ScoreRow[]>();
   for (const s of scores) {
     const list = scoresByDomain.get(s.domain_code) ?? [];
@@ -176,12 +176,12 @@ function tryParseReport(text: string): Record<string, string> {
   const start = clean.indexOf("{");
   const end = clean.lastIndexOf("}");
   if (start === -1 || end === -1 || end <= start) {
-    throw new Error("AI 返回的内容不是 JSON 格式");
+    throw new Error("芽宝返回的内容不是 JSON 格式");
   }
   const json = clean.slice(start, end + 1);
   const parsed = JSON.parse(json);
   if (typeof parsed !== "object" || parsed === null) {
-    throw new Error("AI 返回的 JSON 不是对象");
+    throw new Error("芽宝返回的 JSON 不是对象");
   }
   return parsed as Record<string, string>;
 }

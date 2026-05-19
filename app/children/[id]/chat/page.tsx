@@ -80,7 +80,7 @@ export default async function TeacherChatHistoryPage({ params }: Props) {
               ← 返回 {child.name} 的详情页
             </Link>
             <h1 className="mt-1 text-xl font-bold text-gray-900">
-              家长 AI 对话历史 · {child.name}
+              家长与芽宝的聊天记录 · {child.name}
             </h1>
           </div>
         </div>
@@ -89,7 +89,7 @@ export default async function TeacherChatHistoryPage({ params }: Props) {
       <main className="mx-auto max-w-3xl px-4 py-8">
         {allMessages.length === 0 ? (
           <div className="rounded-lg border border-gray-200 bg-white p-12 text-center">
-            <p className="text-gray-500">该家长尚未使用 AI 助手</p>
+            <p className="text-gray-500">该家长尚未使用芽宝</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -110,7 +110,7 @@ export default async function TeacherChatHistoryPage({ params }: Props) {
                   <p className="text-xs opacity-70 mb-1">
                     {msg.role === "user"
                       ? `家长 ${msg.parentName}`
-                      : "AI 助手"}
+                      : "芽宝"}
                     · {new Date(msg.created_at).toLocaleString("zh-CN")}
                   </p>
                   <p className="whitespace-pre-wrap">{msg.content}</p>

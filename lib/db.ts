@@ -153,7 +153,7 @@ db.exec(`
     FOREIGN KEY (session_id) REFERENCES assessment_sessions(id) ON DELETE CASCADE
   );
 
-  -- 家长 AI 助手聊天系统 (Step 11)
+  -- 家长芽宝聊天系统 (Step 11)
   CREATE TABLE IF NOT EXISTS chat_conversations (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     child_id INTEGER NOT NULL,
