@@ -125,14 +125,14 @@ export default async function ScheduleHubPage({ searchParams }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
+    <div className="min-h-screen bg-warm-bg">
+      <header className="bg-white shadow-sm">
         <div className="mx-auto max-w-5xl px-4 py-6">
-          <Link href="/" className="text-sm text-blue-600 hover:underline">
+          <Link href="/" className="text-sm text-brand hover:underline">
             ← 返回学生列表
           </Link>
-          <h1 className="mt-2 text-2xl font-bold text-gray-900">课表</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="mt-2 text-2xl font-bold text-[#374151]">课表</h1>
+          <p className="mt-1 text-sm text-[#9ca3af]">
             统一管理所有课程，每节课可以同时绑定多个学生。家长只看到自己孩子参加的课。
           </p>
         </div>
@@ -140,30 +140,30 @@ export default async function ScheduleHubPage({ searchParams }: Props) {
 
       <main className="mx-auto max-w-5xl px-4 py-8 space-y-6">
         {/* Week nav */}
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#e8e8e0] bg-white p-4 shadow-sm">
           <div className="flex items-center gap-2">
             <Link
               href={`/schedule?week=${prevWeek}`}
-              className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
+              className="rounded-lg border border-[#d1d5db] px-3 py-1.5 text-sm text-[#6b7280] hover:bg-[#f9fafb]"
             >
               ← 上一周
             </Link>
             {!isCurrentWeek && (
               <Link
                 href="/schedule"
-                className="rounded-md border border-blue-300 bg-blue-50 px-3 py-1.5 text-sm text-blue-700 hover:bg-blue-100"
+                className="rounded-lg border border-brand-light bg-[#f1f8e9] px-3 py-1.5 text-sm text-brand-dark hover:bg-[#e8f5e9]"
               >
                 本周
               </Link>
             )}
             <Link
               href={`/schedule?week=${nextWeek}`}
-              className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
+              className="rounded-lg border border-[#d1d5db] px-3 py-1.5 text-sm text-[#6b7280] hover:bg-[#f9fafb]"
             >
               下一周 →
             </Link>
           </div>
-          <p className="text-sm text-gray-600">{weekRangeLabel(weekStart)}</p>
+          <p className="text-sm text-[#6b7280]">{weekRangeLabel(weekStart)}</p>
         </div>
 
         {/* Week grid */}
@@ -173,50 +173,50 @@ export default async function ScheduleHubPage({ searchParams }: Props) {
             return (
               <div
                 key={dayKey(b.date)}
-                className={`rounded-lg border bg-white p-3 shadow-sm ${
+                className={`rounded-xl border bg-white p-3 shadow-sm ${
                   isToday
-                    ? "border-blue-300 ring-1 ring-blue-100"
-                    : "border-gray-200"
+                    ? "border-brand-light ring-1 ring-brand/20"
+                    : "border-[#e8e8e0]"
                 }`}
               >
-                <div className="mb-2 flex items-baseline justify-between border-b border-gray-100 pb-2">
-                  <span className="text-sm font-medium text-gray-800">
+                <div className="mb-2 flex items-baseline justify-between border-b border-[#f3f4f6] pb-2">
+                  <span className="text-sm font-medium text-[#374151]">
                     {WEEKDAY_LABELS[idx]}
                   </span>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-[#9ca3af]">
                     {formatMonthDay(b.date)}
                   </span>
                 </div>
                 {b.courses.length === 0 ? (
-                  <p className="text-xs text-gray-300">—</p>
+                  <p className="text-xs text-[#d1d5db]">—</p>
                 ) : (
                   <ul className="space-y-2">
                     {(b.courses as CourseWithChildren[]).map((c) => (
                       <li
                         key={c.id}
-                        className="rounded border border-gray-200 bg-gray-50 p-2"
+                        className="rounded border border-[#e8e8e0] bg-warm-bg p-2"
                       >
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-[#9ca3af]">
                           {formatTimeOnly(c.start_at)} -{" "}
                           {formatEndTime(c.start_at, c.duration_minutes)}
                         </p>
-                        <p className="mt-0.5 text-sm font-medium text-gray-800">
+                        <p className="mt-0.5 text-sm font-medium text-[#374151]">
                           {c.course_name}
                         </p>
-                        <p className="mt-0.5 text-xs text-gray-600">
+                        <p className="mt-0.5 text-xs text-[#6b7280]">
                           {c.children.length === 0
                             ? "（未选学生）"
                             : c.children.map((s) => s.name).join("、")}
                         </p>
                         {c.notes && (
-                          <p className="mt-0.5 text-xs text-gray-500 whitespace-pre-wrap">
+                          <p className="mt-0.5 text-xs text-[#9ca3af] whitespace-pre-wrap">
                             {c.notes}
                           </p>
                         )}
                         <div className="mt-1 flex items-center gap-3">
                           <Link
                             href={`/schedule/${c.id}/edit`}
-                            className="text-xs text-blue-600 hover:underline"
+                            className="text-xs text-brand hover:underline"
                           >
                             编辑
                           </Link>
@@ -243,14 +243,14 @@ export default async function ScheduleHubPage({ searchParams }: Props) {
         </div>
 
         {/* Add course */}
-        <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-lg font-semibold text-gray-800">添加课程</h2>
+        <section className="rounded-xl border border-[#e8e8e0] bg-white p-6 shadow-sm">
+          <h2 className="mb-4 text-lg font-semibold text-[#374151]">添加课程</h2>
           {allChildren.length === 0 ? (
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-[#d1d5db]">
               还没有学生，
               <Link
                 href="/children/new"
-                className="text-blue-600 hover:underline"
+                className="text-brand hover:underline"
               >
                 先去添加学生
               </Link>
@@ -260,7 +260,7 @@ export default async function ScheduleHubPage({ searchParams }: Props) {
             <form action={addCourse} className="space-y-4">
               <div className="grid gap-3 sm:grid-cols-6">
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-medium text-gray-600 mb-1">
+                  <label className="block text-xs font-medium text-[#6b7280] mb-1">
                     日期
                   </label>
                   <input
@@ -268,11 +268,11 @@ export default async function ScheduleHubPage({ searchParams }: Props) {
                     name="date"
                     required
                     defaultValue={defaultDate}
-                    className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">
+                  <label className="block text-xs font-medium text-[#6b7280] mb-1">
                     开始时间
                   </label>
                   <input
@@ -280,11 +280,11 @@ export default async function ScheduleHubPage({ searchParams }: Props) {
                     name="time"
                     required
                     defaultValue="09:00"
-                    className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">
+                  <label className="block text-xs font-medium text-[#6b7280] mb-1">
                     时长(分)
                   </label>
                   <input
@@ -294,11 +294,11 @@ export default async function ScheduleHubPage({ searchParams }: Props) {
                     min={1}
                     max={600}
                     defaultValue={60}
-                    className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                   />
                 </div>
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-medium text-gray-600 mb-1">
+                  <label className="block text-xs font-medium text-[#6b7280] mb-1">
                     课程名 <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -306,25 +306,25 @@ export default async function ScheduleHubPage({ searchParams }: Props) {
                     name="course_name"
                     required
                     placeholder="如：语言训练"
-                    className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">
+                <label className="block text-xs font-medium text-[#6b7280] mb-1">
                   参加学生 <span className="text-red-500">*</span>
                 </label>
-                <div className="flex flex-wrap gap-3 rounded-md border border-gray-200 p-3">
+                <div className="flex flex-wrap gap-3 rounded-lg border border-[#e8e8e0] p-3">
                   {allChildren.map((c) => (
                     <label
                       key={c.id}
-                      className="flex items-center gap-1.5 text-sm text-gray-700"
+                      className="flex items-center gap-1.5 text-sm text-[#6b7280]"
                     >
                       <input
                         type="checkbox"
                         name="child_ids"
                         value={c.id}
-                        className="h-4 w-4 text-blue-600"
+                        className="h-4 w-4 text-brand"
                       />
                       {c.name}
                     </label>
@@ -332,19 +332,19 @@ export default async function ScheduleHubPage({ searchParams }: Props) {
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">
+                <label className="block text-xs font-medium text-[#6b7280] mb-1">
                   备注
                 </label>
                 <textarea
                   name="notes"
                   rows={2}
                   placeholder="可选"
-                  className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </div>
               <button
                 type="submit"
-                className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                className="rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-dark transition-all duration-200 active:scale-[0.98]"
               >
                 添加课程
               </button>

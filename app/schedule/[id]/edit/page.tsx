@@ -75,27 +75,27 @@ export default async function EditSchedulePage({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
+    <div className="min-h-screen bg-warm-bg">
+      <header className="bg-white shadow-sm">
         <div className="mx-auto max-w-2xl px-4 py-6">
           <Link
             href={`/schedule?week=${returnWeek}`}
-            className="text-sm text-blue-600 hover:underline"
+            className="text-sm text-brand hover:underline"
           >
             ← 返回课表
           </Link>
-          <h1 className="mt-2 text-2xl font-bold text-gray-900">编辑课程</h1>
+          <h1 className="mt-2 text-2xl font-bold text-[#374151]">编辑课程</h1>
         </div>
       </header>
 
       <main className="mx-auto max-w-2xl px-4 py-8">
         <form
           action={saveEdit}
-          className="space-y-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
+          className="space-y-4 rounded-xl border border-[#e8e8e0] bg-white p-6 shadow-sm"
         >
           <div className="grid gap-3 sm:grid-cols-6">
             <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-xs font-medium text-[#6b7280] mb-1">
                 日期
               </label>
               <input
@@ -103,11 +103,11 @@ export default async function EditSchedulePage({ params }: Props) {
                 name="date"
                 required
                 defaultValue={dateValue}
-                className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-xs font-medium text-[#6b7280] mb-1">
                 开始时间
               </label>
               <input
@@ -115,11 +115,11 @@ export default async function EditSchedulePage({ params }: Props) {
                 name="time"
                 required
                 defaultValue={timeValue}
-                className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-xs font-medium text-[#6b7280] mb-1">
                 时长(分)
               </label>
               <input
@@ -129,11 +129,11 @@ export default async function EditSchedulePage({ params }: Props) {
                 min={1}
                 max={600}
                 defaultValue={course.duration_minutes}
-                className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
               />
             </div>
             <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-xs font-medium text-[#6b7280] mb-1">
                 课程名 <span className="text-red-500">*</span>
               </label>
               <input
@@ -141,27 +141,27 @@ export default async function EditSchedulePage({ params }: Props) {
                 name="course_name"
                 required
                 defaultValue={course.course_name}
-                className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">
+            <label className="block text-xs font-medium text-[#6b7280] mb-1">
               参加学生 <span className="text-red-500">*</span>
             </label>
-            <div className="flex flex-wrap gap-3 rounded-md border border-gray-200 p-3">
+            <div className="flex flex-wrap gap-3 rounded-lg border border-[#e8e8e0] p-3">
               {allChildren.map((c) => (
                 <label
                   key={c.id}
-                  className="flex items-center gap-1.5 text-sm text-gray-700"
+                  className="flex items-center gap-1.5 text-sm text-[#6b7280]"
                 >
                   <input
                     type="checkbox"
                     name="child_ids"
                     value={c.id}
                     defaultChecked={linkedIds.has(c.id)}
-                    className="h-4 w-4 text-blue-600"
+                    className="h-4 w-4 text-brand"
                   />
                   {c.name}
                 </label>
@@ -170,27 +170,27 @@ export default async function EditSchedulePage({ params }: Props) {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">
+            <label className="block text-xs font-medium text-[#6b7280] mb-1">
               备注
             </label>
             <textarea
               name="notes"
               rows={2}
               defaultValue={course.notes ?? ""}
-              className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
             />
           </div>
 
           <div className="flex gap-3 pt-2">
             <Link
               href={`/schedule?week=${returnWeek}`}
-              className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              className="rounded-lg border border-[#d1d5db] px-4 py-2 text-sm font-medium text-[#6b7280] hover:bg-[#f9fafb]"
             >
               取消
             </Link>
             <button
               type="submit"
-              className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+              className="rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-dark transition-all duration-200 active:scale-[0.98]"
             >
               保存修改
             </button>

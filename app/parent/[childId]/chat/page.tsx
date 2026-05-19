@@ -38,17 +38,17 @@ export default async function ChatPage({ params }: Props) {
   const messages = getAllMessagesForConversation(conversation.id);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
+    <div className="min-h-screen bg-warm-bg">
+      <header className="bg-white shadow-sm">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-4">
           <div>
             <Link
               href={`/parent/${childId}`}
-              className="text-sm text-blue-600 hover:underline"
+              className="text-sm text-brand hover:underline"
             >
               ← 返回{child.name}的详情页
             </Link>
-            <h1 className="mt-1 text-xl font-bold text-gray-900">
+            <h1 className="mt-1 text-xl font-bold text-[#374151]">
               芽宝 · {child.name}
             </h1>
           </div>

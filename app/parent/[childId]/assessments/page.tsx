@@ -44,31 +44,31 @@ export default async function ParentAssessmentsHistoryPage({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
+    <div className="min-h-screen bg-warm-bg">
+      <header className="bg-white shadow-sm">
         <div className="mx-auto flex max-w-3xl items-start justify-between px-4 py-6">
           <div>
             <Link
               href={`/parent/${childId}`}
-              className="text-sm text-blue-600 hover:underline"
+              className="text-sm text-brand hover:underline"
             >
               ← 返回{child.name}的主页
             </Link>
-            <h1 className="mt-2 text-2xl font-bold text-gray-900">
+            <h1 className="mt-2 text-2xl font-bold text-[#374151]">
               评估历史 — {child.name}
             </h1>
           </div>
           <div className="flex items-center gap-3 text-sm">
-            <span className="text-gray-700">
+            <span className="text-[#6b7280]">
               {user.username}{" "}
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-[#9ca3af]">
                 ({roleLabel[user.role]})
               </span>
             </span>
             <form action={logout}>
               <button
                 type="submit"
-                className="text-blue-600 hover:underline"
+                className="text-brand hover:underline"
               >
                 退出
               </button>
@@ -79,8 +79,8 @@ export default async function ParentAssessmentsHistoryPage({ params }: Props) {
 
       <main className="mx-auto max-w-3xl px-4 py-8 space-y-6">
         {sessions.length === 0 ? (
-          <div className="rounded-lg border border-gray-200 bg-white p-12 text-center">
-            <p className="text-gray-500">暂无评估记录</p>
+          <div className="rounded-xl border border-[#e8e8e0] bg-white p-12 text-center">
+            <p className="text-[#9ca3af]">暂无评估记录</p>
           </div>
         ) : (
           sessions.map((session) => {
@@ -90,43 +90,43 @@ export default async function ParentAssessmentsHistoryPage({ params }: Props) {
               <Link
                 key={session.id}
                 href={`/parent/${childId}/assessments/${session.id}`}
-                className="block rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition hover:shadow-md"
+                className="block rounded-xl border border-[#e8e8e0] bg-white p-6 shadow-sm transition hover:shadow-md"
               >
                 <div className="mb-4 flex items-center justify-between">
                   <div>
-                    <h3 className="font-medium text-gray-800">
+                    <h3 className="font-medium text-[#374151]">
                       {new Date(session.created_at).toLocaleString("zh-CN")}
                     </h3>
-                    <p className="mt-0.5 text-xs text-gray-500">
+                    <p className="mt-0.5 text-xs text-[#9ca3af]">
                       {session.evaluator_name &&
                         `评估师 ${session.evaluator_name} · `}
                       共评 {scores.length} / 92 项
                     </p>
                   </div>
-                  <span className="text-gray-400">→</span>
+                  <span className="text-[#d1d5db]">→</span>
                 </div>
 
                 <div className="space-y-1.5">
                   {summary.map((d) => (
                     <div key={d.code} className="flex items-center gap-2">
-                      <span className="w-28 text-xs text-gray-600">
-                        <span className="font-mono text-gray-400">
+                      <span className="w-28 text-xs text-[#6b7280]">
+                        <span className="font-mono text-[#d1d5db]">
                           {d.code}
                         </span>{" "}
                         {d.label}
                       </span>
-                      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-200">
+                      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#e8e8e0]">
                         {d.average !== null && (
                           <div
-                            className="h-full rounded-full bg-blue-500"
+                            className="h-full rounded-full bg-brand"
                             style={{ width: `${(d.average / 4) * 100}%` }}
                           />
                         )}
                       </div>
-                      <span className="w-20 text-right text-xs text-gray-500">
+                      <span className="w-20 text-right text-xs text-[#9ca3af]">
                         {d.average !== null ? d.average : "—"}
                       </span>
-                      <span className="w-12 text-right text-xs text-gray-400">
+                      <span className="w-12 text-right text-xs text-[#d1d5db]">
                         {d.scored_count}/{d.total_items}
                       </span>
                     </div>
@@ -134,7 +134,7 @@ export default async function ParentAssessmentsHistoryPage({ params }: Props) {
                 </div>
 
                 {session.session_notes && (
-                  <p className="mt-3 whitespace-pre-wrap rounded bg-gray-50 p-2 text-xs text-gray-600">
+                  <p className="mt-3 whitespace-pre-wrap rounded bg-warm-bg p-2 text-xs text-[#6b7280]">
                     {session.session_notes}
                   </p>
                 )}

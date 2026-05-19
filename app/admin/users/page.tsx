@@ -186,16 +186,16 @@ export default async function AdminUsersPage({ searchParams }: Props) {
   // ---------- Render ----------
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
+    <div className="min-h-screen bg-warm-bg">
+      <header className="bg-white shadow-sm">
         <div className="mx-auto max-w-4xl px-4 py-6">
           <Link
             href="/admin"
-            className="text-sm text-blue-600 hover:underline"
+            className="text-sm text-brand hover:underline"
           >
             ← 返回管理员首页
           </Link>
-          <h1 className="mt-2 text-2xl font-bold text-gray-900">账号管理</h1>
+          <h1 className="mt-2 text-2xl font-bold text-[#374151]">账号管理</h1>
         </div>
       </header>
 
@@ -204,8 +204,8 @@ export default async function AdminUsersPage({ searchParams }: Props) {
           <div
             className={
               flash.kind === "ok"
-                ? "rounded-md border border-green-200 bg-green-50 p-3 text-sm text-green-800"
-                : "rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700"
+                ? "rounded-lg border border-green-200 bg-green-50 p-3 text-sm text-green-800"
+                : "rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700"
             }
           >
             {flash.text}
@@ -213,8 +213,8 @@ export default async function AdminUsersPage({ searchParams }: Props) {
         )}
 
         {/* My password */}
-        <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-lg font-semibold text-gray-800">
+        <section className="rounded-xl border border-[#e8e8e0] bg-white p-6 shadow-sm">
+          <h2 className="mb-4 text-lg font-semibold text-[#374151]">
             修改我的密码
           </h2>
           <form
@@ -227,7 +227,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
               placeholder="旧密码"
               required
               autoComplete="current-password"
-              className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
             />
             <input
               type="password"
@@ -236,7 +236,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
               required
               minLength={6}
               autoComplete="new-password"
-              className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
             />
             <input
               type="password"
@@ -245,16 +245,16 @@ export default async function AdminUsersPage({ searchParams }: Props) {
               required
               minLength={6}
               autoComplete="new-password"
-              className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
             />
             <div className="sm:col-span-3">
               <button
                 type="submit"
-                className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                className="rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-dark transition-all duration-200 active:scale-[0.98]"
               >
                 修改密码
               </button>
-              <span className="ml-3 text-xs text-gray-500">
+              <span className="ml-3 text-xs text-[#9ca3af]">
                 提交后会强制下线，需要重新登录
               </span>
             </div>
@@ -262,25 +262,25 @@ export default async function AdminUsersPage({ searchParams }: Props) {
         </section>
 
         {/* Teachers */}
-        <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-lg font-semibold text-gray-800">
+        <section className="rounded-xl border border-[#e8e8e0] bg-white p-6 shadow-sm">
+          <h2 className="mb-4 text-lg font-semibold text-[#374151]">
             老师账号
           </h2>
 
           {teachers.length === 0 ? (
-            <p className="text-sm text-gray-400 mb-4">暂无老师账号</p>
+            <p className="text-sm text-[#d1d5db] mb-4">暂无老师账号</p>
           ) : (
-            <ul className="mb-4 divide-y divide-gray-100 rounded-md border border-gray-200">
+            <ul className="mb-4 divide-y divide-[#f3f4f6] rounded-lg border border-[#e8e8e0]">
               {teachers.map((t) => (
                 <li
                   key={t.id}
                   className="flex items-center justify-between px-3 py-2 text-sm"
                 >
                   <div>
-                    <span className="font-medium text-gray-800">
+                    <span className="font-medium text-[#374151]">
                       {t.username}
                     </span>
-                    <span className="ml-3 text-xs text-gray-500">
+                    <span className="ml-3 text-xs text-[#9ca3af]">
                       创建于{" "}
                       {new Date(t.created_at).toLocaleDateString("zh-CN")}
                     </span>
@@ -297,11 +297,11 @@ export default async function AdminUsersPage({ searchParams }: Props) {
                         placeholder="新密码"
                         required
                         minLength={6}
-                        className="w-32 rounded border border-gray-300 px-2 py-1 text-xs"
+                        className="w-32 rounded border border-[#d1d5db] px-2 py-1 text-xs"
                       />
                       <button
                         type="submit"
-                        className="text-xs text-blue-600 hover:underline"
+                        className="text-xs text-brand hover:underline"
                       >
                         重置密码
                       </button>
@@ -320,7 +320,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
             </ul>
           )}
 
-          <h3 className="text-sm font-medium text-gray-700 mb-2">
+          <h3 className="text-sm font-medium text-[#6b7280] mb-2">
             新建老师账号
           </h3>
           <form
@@ -333,7 +333,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
               placeholder="用户名"
               required
               pattern="[a-zA-Z0-9_]{3,30}"
-              className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
             />
             <input
               type="password"
@@ -342,11 +342,11 @@ export default async function AdminUsersPage({ searchParams }: Props) {
               required
               minLength={6}
               autoComplete="new-password"
-              className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
             />
             <button
               type="submit"
-              className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+              className="rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-dark transition-all duration-200 active:scale-[0.98]"
             >
               创建老师账号
             </button>
@@ -354,15 +354,15 @@ export default async function AdminUsersPage({ searchParams }: Props) {
         </section>
 
         {/* Parents */}
-        <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-lg font-semibold text-gray-800">
+        <section className="rounded-xl border border-[#e8e8e0] bg-white p-6 shadow-sm">
+          <h2 className="mb-4 text-lg font-semibold text-[#374151]">
             家长账号
           </h2>
 
           {parents.length === 0 ? (
-            <p className="text-sm text-gray-400 mb-4">暂无家长账号</p>
+            <p className="text-sm text-[#d1d5db] mb-4">暂无家长账号</p>
           ) : (
-            <ul className="mb-4 divide-y divide-gray-100 rounded-md border border-gray-200">
+            <ul className="mb-4 divide-y divide-[#f3f4f6] rounded-lg border border-[#e8e8e0]">
               {parents.map((p) => {
                 const kids = childrenByParent.get(p.id) ?? [];
                 return (
@@ -371,10 +371,10 @@ export default async function AdminUsersPage({ searchParams }: Props) {
                     className="flex items-center justify-between px-3 py-2 text-sm"
                   >
                     <div>
-                      <span className="font-medium text-gray-800">
+                      <span className="font-medium text-[#374151]">
                         {p.username}
                       </span>
-                      <span className="ml-3 text-xs text-gray-500">
+                      <span className="ml-3 text-xs text-[#9ca3af]">
                         孩子：
                         {kids.length === 0
                           ? "未绑定"
@@ -393,11 +393,11 @@ export default async function AdminUsersPage({ searchParams }: Props) {
                           placeholder="新密码"
                           required
                           minLength={6}
-                          className="w-32 rounded border border-gray-300 px-2 py-1 text-xs"
+                          className="w-32 rounded border border-[#d1d5db] px-2 py-1 text-xs"
                         />
                         <button
                           type="submit"
-                          className="text-xs text-blue-600 hover:underline"
+                          className="text-xs text-brand hover:underline"
                         >
                           重置密码
                         </button>
@@ -417,15 +417,15 @@ export default async function AdminUsersPage({ searchParams }: Props) {
             </ul>
           )}
 
-          <h3 className="text-sm font-medium text-gray-700 mb-2">
+          <h3 className="text-sm font-medium text-[#6b7280] mb-2">
             新建家长账号
           </h3>
           {allChildren.length === 0 ? (
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-[#d1d5db]">
               还没有学生，
               <Link
                 href="/children/new"
-                className="text-blue-600 hover:underline"
+                className="text-brand hover:underline"
               >
                 先去添加学生
               </Link>
@@ -439,7 +439,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
                 placeholder="用户名"
                 required
                 pattern="[a-zA-Z0-9_]{3,30}"
-                className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
               />
               <input
                 type="password"
@@ -448,13 +448,13 @@ export default async function AdminUsersPage({ searchParams }: Props) {
                 required
                 minLength={6}
                 autoComplete="new-password"
-                className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
               />
               <select
                 name="child_id"
                 required
                 defaultValue=""
-                className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
               >
                 <option value="" disabled>
                   绑定孩子
@@ -467,7 +467,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
               </select>
               <button
                 type="submit"
-                className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                className="rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-dark transition-all duration-200 active:scale-[0.98]"
               >
                 创建家长账号
               </button>

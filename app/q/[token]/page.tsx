@@ -145,13 +145,13 @@ export default async function ParentQuestionnairePage({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
+    <div className="min-h-screen bg-warm-bg">
+      <header className="bg-white shadow-sm">
         <div className="mx-auto max-w-2xl px-4 py-6">
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-[#374151]">
             家长问卷 — {child.name}
           </h1>
-          <p className="mt-2 text-sm text-gray-600 leading-relaxed">
+          <p className="mt-2 text-sm text-[#6b7280] leading-relaxed">
             感谢您配合填写。您提供的信息将帮助老师更全面地了解 {child.name}
             ,并据此制定个性化的教育计划。除"姓名"和"您的期望"必填外,其余项均可选填。
           </p>
@@ -160,7 +160,7 @@ export default async function ParentQuestionnairePage({
 
       <main className="mx-auto max-w-2xl px-4 py-8">
         {justSaved && (
-          <div className="mb-6 rounded-md border border-green-200 bg-green-50 p-4">
+          <div className="mb-6 rounded-lg border border-green-200 bg-green-50 p-4">
             <p className="text-sm text-green-800">
               ✓ 已提交成功,感谢您的配合!您可关闭页面,也可继续修改后再提交。
             </p>
@@ -168,8 +168,8 @@ export default async function ParentQuestionnairePage({
         )}
 
         {q.submitted_at && !justSaved && (
-          <div className="mb-6 rounded-md border border-blue-200 bg-blue-50 p-4">
-            <p className="text-sm text-blue-800">
+          <div className="mb-6 rounded-lg border border-[#c5e1a5] bg-[#f1f8e9] p-4">
+            <p className="text-sm text-brand-dark">
               您已于 {new Date(q.submitted_at).toLocaleString("zh-CN")}{" "}
               提交过此问卷。可以重新编辑后再次提交。
             </p>
@@ -178,15 +178,15 @@ export default async function ParentQuestionnairePage({
 
         <form action={saveQuestionnaire} className="space-y-6">
           {/* 一、家长信息 */}
-          <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-base font-semibold text-gray-800">
+          <section className="rounded-xl border border-[#e8e8e0] bg-white p-6 shadow-sm">
+            <h2 className="mb-4 text-base font-semibold text-[#374151]">
               一、您的信息
             </h2>
             <div className="space-y-4">
               <div>
                 <label
                   htmlFor="parent_name"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-[#6b7280]"
                 >
                   您的姓名 <span className="text-red-500">*</span>
                 </label>
@@ -196,7 +196,7 @@ export default async function ParentQuestionnairePage({
                   name="parent_name"
                   required
                   defaultValue={q.parent_name ?? ""}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </div>
 
@@ -204,7 +204,7 @@ export default async function ParentQuestionnairePage({
                 <div>
                   <label
                     htmlFor="relation"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-medium text-[#6b7280]"
                   >
                     与孩子的关系
                   </label>
@@ -212,7 +212,7 @@ export default async function ParentQuestionnairePage({
                     id="relation"
                     name="relation"
                     defaultValue={q.relation ?? ""}
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                   >
                     <option value="">请选择</option>
                     <option value="父亲">父亲</option>
@@ -224,7 +224,7 @@ export default async function ParentQuestionnairePage({
                 <div>
                   <label
                     htmlFor="contact"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-medium text-[#6b7280]"
                   >
                     联系方式(手机或微信)
                   </label>
@@ -233,7 +233,7 @@ export default async function ParentQuestionnairePage({
                     id="contact"
                     name="contact"
                     defaultValue={q.contact ?? ""}
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                   />
                 </div>
               </div>
@@ -241,17 +241,17 @@ export default async function ParentQuestionnairePage({
           </section>
 
           {/* 二、孩子基本信息 */}
-          <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-base font-semibold text-gray-800">
+          <section className="rounded-xl border border-[#e8e8e0] bg-white p-6 shadow-sm">
+            <h2 className="mb-4 text-base font-semibold text-[#374151]">
               二、孩子基本信息
             </h2>
             <div className="space-y-4">
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-[#6b7280]">
                     性别
                   </label>
-                  <div className="mt-2 flex gap-4 text-sm text-gray-700">
+                  <div className="mt-2 flex gap-4 text-sm text-[#6b7280]">
                     {["男", "女", "其他"].map((g) => (
                       <label key={g} className="flex items-center gap-1.5">
                         <input
@@ -259,7 +259,7 @@ export default async function ParentQuestionnairePage({
                           name="child_gender"
                           value={g}
                           defaultChecked={defaultGender === g}
-                          className="h-4 w-4 text-blue-600"
+                          className="h-4 w-4 text-brand"
                         />
                         {g}
                       </label>
@@ -269,7 +269,7 @@ export default async function ParentQuestionnairePage({
                 <div>
                   <label
                     htmlFor="child_birth_date"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-medium text-[#6b7280]"
                   >
                     出生日期
                   </label>
@@ -278,7 +278,7 @@ export default async function ParentQuestionnairePage({
                     id="child_birth_date"
                     name="child_birth_date"
                     defaultValue={defaultBirthDate}
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                   />
                 </div>
               </div>
@@ -286,19 +286,19 @@ export default async function ParentQuestionnairePage({
           </section>
 
           {/* 三、诊断信息 */}
-          <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-base font-semibold text-gray-800">
+          <section className="rounded-xl border border-[#e8e8e0] bg-white p-6 shadow-sm">
+            <h2 className="mb-4 text-base font-semibold text-[#374151]">
               三、诊断信息
             </h2>
             <div className="space-y-4">
               <div>
                 <label
                   htmlFor="diagnosis"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-[#6b7280]"
                 >
                   诊断结果
                 </label>
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-[#9ca3af]">
                   例如:自闭症谱系障碍、发育迟缓等
                 </p>
                 <input
@@ -306,14 +306,14 @@ export default async function ParentQuestionnairePage({
                   id="diagnosis"
                   name="diagnosis"
                   defaultValue={q.diagnosis ?? ""}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
                   <label
                     htmlFor="diagnosis_hospital"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-medium text-[#6b7280]"
                   >
                     诊断医院
                   </label>
@@ -322,13 +322,13 @@ export default async function ParentQuestionnairePage({
                     id="diagnosis_hospital"
                     name="diagnosis_hospital"
                     defaultValue={q.diagnosis_hospital ?? ""}
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                   />
                 </div>
                 <div>
                   <label
                     htmlFor="diagnosis_date"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-medium text-[#6b7280]"
                   >
                     诊断日期
                   </label>
@@ -337,7 +337,7 @@ export default async function ParentQuestionnairePage({
                     id="diagnosis_date"
                     name="diagnosis_date"
                     defaultValue={q.diagnosis_date ?? ""}
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                   />
                 </div>
               </div>
@@ -345,19 +345,19 @@ export default async function ParentQuestionnairePage({
           </section>
 
           {/* 四、健康与干预 */}
-          <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-base font-semibold text-gray-800">
+          <section className="rounded-xl border border-[#e8e8e0] bg-white p-6 shadow-sm">
+            <h2 className="mb-4 text-base font-semibold text-[#374151]">
               四、健康与干预情况
             </h2>
             <div className="space-y-4">
               <div>
                 <label
                   htmlFor="current_training"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-[#6b7280]"
                 >
                   当前是否接受康复训练?
                 </label>
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-[#9ca3af]">
                   请说明训练类型和时长,例如:"是,语言治疗,每周 2 次,每次 1 小时" 或 "无"
                 </p>
                 <textarea
@@ -365,33 +365,33 @@ export default async function ParentQuestionnairePage({
                   name="current_training"
                   rows={2}
                   defaultValue={q.current_training ?? ""}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </div>
               <div>
                 <label
                   htmlFor="prior_training"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-[#6b7280]"
                 >
                   之前接受过的训练或治疗
                 </label>
-                <p className="mt-1 text-xs text-gray-500">如有请简要说明</p>
+                <p className="mt-1 text-xs text-[#9ca3af]">如有请简要说明</p>
                 <textarea
                   id="prior_training"
                   name="prior_training"
                   rows={2}
                   defaultValue={q.prior_training ?? ""}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </div>
               <div>
                 <label
                   htmlFor="medication"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-[#6b7280]"
                 >
                   是否服用药物?
                 </label>
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-[#9ca3af]">
                   请说明药物名称和用药时间;无则填"无"
                 </p>
                 <textarea
@@ -399,13 +399,13 @@ export default async function ParentQuestionnairePage({
                   name="medication"
                   rows={2}
                   defaultValue={q.medication ?? ""}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </div>
               <div>
                 <label
                   htmlFor="allergies"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-[#6b7280]"
                 >
                   过敏史 / 禁忌事项
                 </label>
@@ -415,26 +415,26 @@ export default async function ParentQuestionnairePage({
                   name="allergies"
                   defaultValue={q.allergies ?? ""}
                   placeholder="无 或 具体说明"
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </div>
             </div>
           </section>
 
           {/* 五、孩子的特点 */}
-          <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-base font-semibold text-gray-800">
+          <section className="rounded-xl border border-[#e8e8e0] bg-white p-6 shadow-sm">
+            <h2 className="mb-4 text-base font-semibold text-[#374151]">
               五、孩子的特点
             </h2>
             <div className="space-y-4">
               <div>
                 <label
                   htmlFor="daily_behavior"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-[#6b7280]"
                 >
                   孩子在家的日常表现
                 </label>
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-[#9ca3af]">
                   例如:沟通方式、情绪特点、与家人的互动、兴趣爱好等
                 </p>
                 <textarea
@@ -442,17 +442,17 @@ export default async function ParentQuestionnairePage({
                   name="daily_behavior"
                   rows={4}
                   defaultValue={q.daily_behavior ?? ""}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </div>
               <div>
                 <label
                   htmlFor="main_reinforcers"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-[#6b7280]"
                 >
                   主要强化物
                 </label>
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-[#9ca3af]">
                   孩子最喜欢的物品 / 活动 / 食物(老师会用这些做奖励)
                 </p>
                 <textarea
@@ -460,17 +460,17 @@ export default async function ParentQuestionnairePage({
                   name="main_reinforcers"
                   rows={2}
                   defaultValue={q.main_reinforcers ?? ""}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </div>
               <div>
                 <label
                   htmlFor="prior_assessment"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-[#6b7280]"
                 >
                   上一次评估
                 </label>
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-[#9ca3af]">
                   如有,请简要说明评估时间和使用的工具
                 </p>
                 <input
@@ -479,26 +479,26 @@ export default async function ParentQuestionnairePage({
                   name="prior_assessment"
                   defaultValue={q.prior_assessment ?? ""}
                   placeholder="例如:2025-06,使用 PEP-3"
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </div>
             </div>
           </section>
 
           {/* 六、关注和期望 */}
-          <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-base font-semibold text-gray-800">
+          <section className="rounded-xl border border-[#e8e8e0] bg-white p-6 shadow-sm">
+            <h2 className="mb-4 text-base font-semibold text-[#374151]">
               六、您的关注和期望
             </h2>
             <div className="space-y-4">
               <div>
                 <label
                   htmlFor="top_concerns"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-[#6b7280]"
                 >
                   您最关注的 2-3 个问题
                 </label>
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-[#9ca3af]">
                   例如:语言发展、社交、自理能力、注意力等当前最担心的
                 </p>
                 <textarea
@@ -506,17 +506,17 @@ export default async function ParentQuestionnairePage({
                   name="top_concerns"
                   rows={3}
                   defaultValue={q.top_concerns ?? ""}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </div>
               <div>
                 <label
                   htmlFor="parent_expectations"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-[#6b7280]"
                 >
                   您对孩子的期望 <span className="text-red-500">*</span>
                 </label>
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-[#9ca3af]">
                   希望孩子能在哪些方面有进步、未来理想的状态等
                 </p>
                 <textarea
@@ -525,16 +525,16 @@ export default async function ParentQuestionnairePage({
                   rows={4}
                   required
                   defaultValue={q.parent_expectations ?? ""}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </div>
             </div>
           </section>
 
-          <div className="sticky bottom-4 z-10 rounded-lg border border-gray-200 bg-white p-4 shadow-md">
+          <div className="sticky bottom-4 z-10 rounded-xl border border-[#e8e8e0] bg-white p-4 shadow-sm">
             <button
               type="submit"
-              className="w-full rounded-md bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700"
+              className="w-full rounded-lg bg-brand px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-dark transition-all duration-200 active:scale-[0.98]"
             >
               {q.submitted_at ? "更新提交" : "提交问卷"}
             </button>

@@ -53,16 +53,16 @@ export default async function TreatmentPage({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
+    <div className="min-h-screen bg-warm-bg">
+      <header className="bg-white shadow-sm">
         <div className="mx-auto max-w-2xl px-4 py-6">
           <Link
             href={`/children/${childId}`}
-            className="text-sm text-blue-600 hover:underline"
+            className="text-sm text-brand hover:underline"
           >
             ← 返回{child.name}的详情
           </Link>
-          <h1 className="mt-2 text-2xl font-bold text-gray-900">
+          <h1 className="mt-2 text-2xl font-bold text-[#374151]">
             {existingPlan ? "编辑" : "制定"}治疗计划 — {child.name}
           </h1>
         </div>
@@ -71,12 +71,12 @@ export default async function TreatmentPage({ params }: Props) {
       <main className="mx-auto max-w-2xl px-4 py-8">
         <form
           action={saveTreatment}
-          className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
+          className="rounded-xl border border-[#e8e8e0] bg-white p-6 shadow-sm"
         >
           <div>
             <label
               htmlFor="content"
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-sm font-medium text-[#6b7280] mb-2"
             >
               治疗/教育计划内容
             </label>
@@ -86,7 +86,7 @@ export default async function TreatmentPage({ params }: Props) {
               rows={12}
               defaultValue={existingPlan?.content || ""}
               required
-              className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
               placeholder="在这里填写针对该学生的治疗和教育计划...&#10;&#10;可以包括：&#10;- 每日/每周的训练目标&#10;- 具体的活动和方法&#10;- 家庭配合建议&#10;- 注意事项"
             />
           </div>
@@ -94,13 +94,13 @@ export default async function TreatmentPage({ params }: Props) {
           <div className="mt-6 flex gap-3">
             <Link
               href={`/children/${childId}`}
-              className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              className="rounded-lg border border-[#d1d5db] px-4 py-2 text-sm font-medium text-[#6b7280] hover:bg-[#f9fafb]"
             >
               取消
             </Link>
             <button
               type="submit"
-              className="rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700"
+              className="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 transition-all duration-200 active:scale-[0.98]"
             >
               保存计划
             </button>

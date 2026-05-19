@@ -38,16 +38,16 @@ export default async function NewChildPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
+    <div className="min-h-screen bg-warm-bg">
+      <header className="bg-white shadow-sm">
         <div className="mx-auto max-w-2xl px-4 py-6">
-          <Link href="/" className="text-sm text-blue-600 hover:underline">
+          <Link href="/" className="text-sm text-brand hover:underline">
             ← 返回首页
           </Link>
-          <h1 className="mt-2 text-2xl font-bold text-gray-900">
+          <h1 className="mt-2 text-2xl font-bold text-[#374151]">
             添加学生
           </h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-[#9ca3af]">
             性别和出生日期也可以让家长稍后通过问卷填写
           </p>
         </div>
@@ -56,13 +56,13 @@ export default async function NewChildPage() {
       <main className="mx-auto max-w-2xl px-4 py-8">
         <form
           action={addChild}
-          className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
+          className="rounded-xl border border-[#e8e8e0] bg-white p-6 shadow-sm"
         >
           <div className="space-y-5">
             <div>
               <label
                 htmlFor="name"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-[#6b7280]"
               >
                 姓名 <span className="text-red-500">*</span>
               </label>
@@ -71,24 +71,24 @@ export default async function NewChildPage() {
                 id="name"
                 name="name"
                 required
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 placeholder="请输入学生姓名"
               />
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-[#6b7280]">
                   性别
                 </label>
-                <div className="mt-2 flex gap-4 text-sm text-gray-700">
+                <div className="mt-2 flex gap-4 text-sm text-[#6b7280]">
                   {["男", "女", "其他"].map((g) => (
                     <label key={g} className="flex items-center gap-1.5">
                       <input
                         type="radio"
                         name="child_gender"
                         value={g}
-                        className="h-4 w-4 text-blue-600"
+                        className="h-4 w-4 text-brand"
                       />
                       {g}
                     </label>
@@ -98,7 +98,7 @@ export default async function NewChildPage() {
               <div>
                 <label
                   htmlFor="child_birth_date"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-[#6b7280]"
                 >
                   出生日期
                 </label>
@@ -106,9 +106,9 @@ export default async function NewChildPage() {
                   type="date"
                   id="child_birth_date"
                   name="child_birth_date"
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-[#9ca3af]">
                   实足年龄会根据出生日期自动算出
                 </p>
               </div>
@@ -117,7 +117,7 @@ export default async function NewChildPage() {
             <div>
               <label
                 htmlFor="diagnosis_notes"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-[#6b7280]"
               >
                 诊断备注
               </label>
@@ -125,7 +125,7 @@ export default async function NewChildPage() {
                 id="diagnosis_notes"
                 name="diagnosis_notes"
                 rows={4}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 placeholder="简要描述学生的情况（可选）"
               />
             </div>
@@ -133,7 +133,7 @@ export default async function NewChildPage() {
             <div>
               <label
                 htmlFor="parent_expectations"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-[#6b7280]"
               >
                 家长期望
               </label>
@@ -141,7 +141,7 @@ export default async function NewChildPage() {
                 id="parent_expectations"
                 name="parent_expectations"
                 rows={4}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 placeholder="家长希望孩子在哪些方面进步？(可选)"
               />
             </div>
@@ -150,13 +150,13 @@ export default async function NewChildPage() {
           <div className="mt-6 flex gap-3">
             <Link
               href="/"
-              className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              className="rounded-lg border border-[#d1d5db] px-4 py-2 text-sm font-medium text-[#6b7280] hover:bg-[#f9fafb]"
             >
               取消
             </Link>
             <button
               type="submit"
-              className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+              className="rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-dark transition-all duration-200 active:scale-[0.98]"
             >
               保存
             </button>

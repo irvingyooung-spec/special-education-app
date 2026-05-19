@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Users, Baby, Shield, ArrowRight, LogOut } from "lucide-react";
 import db from "@/lib/db";
+import PageShell from "@/app/components/page-shell";
+import Card from "@/app/components/card";
 import {
   destroyCurrentSession,
   requireRole,
@@ -32,79 +35,97 @@ export default async function AdminHome() {
     redirect("/login");
   }
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
-        <div className="mx-auto flex max-w-4xl items-start justify-between px-4 py-6">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">特教助手</h1>
-            <p className="mt-1 text-sm text-gray-500">管理员工作台</p>
-          </div>
-          <div className="flex items-center gap-3 text-sm">
-            <span className="text-gray-700">
-              {user.username}{" "}
-              <span className="text-xs text-gray-500">
-                ({roleLabel[user.role]})
-              </span>
-            </span>
-            <form action={logout}>
-              <button
-                type="submit"
-                className="text-blue-600 hover:underline"
-              >
-                退出
-              </button>
-            </form>
-          </div>
-        </div>
-      </header>
-
-      <main className="mx-auto max-w-4xl px-4 py-8 space-y-6">
-        <section className="grid gap-4 sm:grid-cols-3">
-          <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
-            <p className="text-sm text-gray-500">学生总数</p>
-            <p className="mt-1 text-2xl font-semibold text-gray-900">
-              {counts.children}
-            </p>
-          </div>
-          <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
-            <p className="text-sm text-gray-500">老师账号</p>
-            <p className="mt-1 text-2xl font-semibold text-gray-900">
-              {counts.teachers}
-            </p>
-          </div>
-          <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
-            <p className="text-sm text-gray-500">家长账号</p>
-            <p className="mt-1 text-2xl font-semibold text-gray-900">
-              {counts.parents}
-            </p>
-          </div>
-        </section>
-
-        <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-800">快捷入口</h2>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <Link
-              href="/admin/users"
-              className="rounded-md border border-gray-200 px-4 py-3 text-sm text-gray-800 hover:border-blue-300 hover:bg-blue-50"
-            >
-              <p className="font-medium">账号管理</p>
-              <p className="mt-0.5 text-xs text-gray-500">
-                创建/重置/删除老师和家长账号
-              </p>
-            </Link>
-            <Link
-              href="/"
-              className="rounded-md border border-gray-200 px-4 py-3 text-sm text-gray-800 hover:border-blue-300 hover:bg-blue-50"
-            >
-              <p className="font-medium">老师工作台</p>
-              <p className="mt-0.5 text-xs text-gray-500">
-                看学生列表、评估、治疗计划
-              </p>
-            </Link>
-          </div>
-        </section>
-      </main>
+  const headerAction = (
+    <div className="flex items-center gap-3 text-sm">
+      <span className="text-[#6b7280]">
+        {user.username}{" "}
+        <span className="text-xs text-[#9ca3af]">
+          ({roleLabel[user.role]})
+        </span>
+      </span>
+      <form action={logout}>
+        <button
+          type="submit"
+          className="inline-flex items-center gap-1 text-[#6b7280] hover:text-brand transition-colors"
+        >
+          <LogOut className="h-3.5 w-3.5" />
+          退出
+        </button>
+      </form>
     </div>
+  );
+
+  return (
+    <PageShell
+      title="管理员工作台"
+      subtitle="账号管理与数据概览"
+      action={headerAction}
+      showLogo
+    >
+      <div className="grid gap-4 sm:grid-cols-3 mb-6">
+        <Card className="p-5">
+          <div className="flex items-center gap-3">
+            <div className="rounded-lg bg-[#f1f8e9] p-2.5">
+              <Baby className="h-5 w-5 text-brand" />
+            </div>
+            <div>
+              <p className="text-sm text-[#9ca3af]">学生总数</p>
+              <p className="text-2xl font-semibold text-[#374151]">
+                {counts.children}
+              </p>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-5">
+          <div className="flex items-center gap-3">
+            <div className="rounded-lg bg-[#fffde7] p-2.5">
+              <Users className="h-5 w-5 text-[#f9a825]" />
+            </div>
+            <div>
+              <p className="text-sm text-[#9ca3af]">老师账号</p>
+              <p className="text-2xl font-semibold text-[#374151]">
+                {counts.teachers}
+              </p>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-5">
+          <div className="flex items-center gap-3">
+            <div className="rounded-lg bg-[#fce4ec] p-2.5">
+              <Shield className="h-5 w-5 text-[#ec407a]" />
+            </div>
+            <div>
+              <p className="text-sm text-[#9ca3af]">家长账号</p>
+              <p className="text-2xl font-semibold text-[#374151]">
+                {counts.parents}
+              </p>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      <Card title="快捷入口" icon={ArrowRight}>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Link
+            href="/admin/users"
+            className="group rounded-lg border border-[#e8e8e0] px-4 py-3 text-sm text-[#374151] bg-white hover:border-brand-light hover:bg-[#f1f8e9] transition-all"
+          >
+            <p className="font-medium">账号管理</p>
+            <p className="mt-0.5 text-xs text-[#9ca3af]">
+              创建/重置/删除老师和家长账号
+            </p>
+          </Link>
+          <Link
+            href="/"
+            className="group rounded-lg border border-[#e8e8e0] px-4 py-3 text-sm text-[#374151] bg-white hover:border-brand-light hover:bg-[#f1f8e9] transition-all"
+          >
+            <p className="font-medium">老师工作台</p>
+            <p className="mt-0.5 text-xs text-[#9ca3af]">
+              看学生列表、评估、治疗计划
+            </p>
+          </Link>
+        </div>
+      </Card>
+    </PageShell>
   );
 }

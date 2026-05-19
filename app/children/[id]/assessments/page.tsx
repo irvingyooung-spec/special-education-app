@@ -26,16 +26,16 @@ export default async function AssessmentsHistoryPage({ params }: Props) {
   const sessions = getSessionsForChild(childId);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
+    <div className="min-h-screen bg-warm-bg">
+      <header className="bg-white shadow-sm">
         <div className="mx-auto max-w-3xl px-4 py-6">
           <Link
             href={`/children/${childId}`}
-            className="text-sm text-blue-600 hover:underline"
+            className="text-sm text-brand hover:underline"
           >
             ← 返回{child.name}的详情
           </Link>
-          <h1 className="mt-2 text-2xl font-bold text-gray-900">
+          <h1 className="mt-2 text-2xl font-bold text-[#374151]">
             评估历史 — {child.name}
           </h1>
         </div>
@@ -43,11 +43,11 @@ export default async function AssessmentsHistoryPage({ params }: Props) {
 
       <main className="mx-auto max-w-3xl px-4 py-8 space-y-6">
         {sessions.length === 0 ? (
-          <div className="rounded-lg border border-gray-200 bg-white p-12 text-center">
-            <p className="text-gray-500">暂无评估记录</p>
+          <div className="rounded-xl border border-[#e8e8e0] bg-white p-12 text-center">
+            <p className="text-[#9ca3af]">暂无评估记录</p>
             <Link
               href={`/children/${childId}/assess`}
-              className="mt-4 inline-block rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+              className="mt-4 inline-block rounded-lg bg-brand px-4 py-2 text-sm text-white hover:bg-brand-dark transition-all duration-200 active:scale-[0.98]"
             >
               开始第一次评估
             </Link>
@@ -61,14 +61,14 @@ export default async function AssessmentsHistoryPage({ params }: Props) {
               <Link
                 key={session.id}
                 href={`/children/${childId}/assessments/${session.id}`}
-                className="block rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition hover:shadow-md"
+                className="block rounded-xl border border-[#e8e8e0] bg-white p-6 shadow-sm transition hover:shadow-md"
               >
                 <div className="mb-4 flex items-center justify-between">
                   <div>
-                    <h3 className="font-medium text-gray-800">
+                    <h3 className="font-medium text-[#374151]">
                       {new Date(session.created_at).toLocaleString("zh-CN")}
                     </h3>
-                    <p className="mt-0.5 text-xs text-gray-500">
+                    <p className="mt-0.5 text-xs text-[#9ca3af]">
                       {session.evaluator_name
                         ? `评估师 ${session.evaluator_name}`
                         : "评估师未填"}
@@ -76,30 +76,30 @@ export default async function AssessmentsHistoryPage({ params }: Props) {
                       共评 {totalScored} / 92 项
                     </p>
                   </div>
-                  <span className="text-gray-400">→</span>
+                  <span className="text-[#d1d5db]">→</span>
                 </div>
 
                 <div className="space-y-1.5">
                   {summary.map((d) => (
                     <div key={d.code} className="flex items-center gap-2">
-                      <span className="w-28 text-xs text-gray-600">
-                        <span className="font-mono text-gray-400">
+                      <span className="w-28 text-xs text-[#6b7280]">
+                        <span className="font-mono text-[#d1d5db]">
                           {d.code}
                         </span>{" "}
                         {d.label}
                       </span>
-                      <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                      <div className="flex-1 h-1.5 bg-[#e8e8e0] rounded-full overflow-hidden">
                         {d.average !== null && (
                           <div
-                            className="h-full rounded-full bg-blue-500"
+                            className="h-full rounded-full bg-brand"
                             style={{ width: `${(d.average / 4) * 100}%` }}
                           />
                         )}
                       </div>
-                      <span className="w-20 text-right text-xs text-gray-500">
+                      <span className="w-20 text-right text-xs text-[#9ca3af]">
                         {d.average !== null ? d.average : "—"}
                       </span>
-                      <span className="w-12 text-right text-xs text-gray-400">
+                      <span className="w-12 text-right text-xs text-[#d1d5db]">
                         {d.scored_count}/{d.total_items}
                       </span>
                     </div>
@@ -107,7 +107,7 @@ export default async function AssessmentsHistoryPage({ params }: Props) {
                 </div>
 
                 {session.session_notes && (
-                  <p className="mt-3 rounded bg-gray-50 p-2 text-xs text-gray-600 whitespace-pre-wrap">
+                  <p className="mt-3 rounded bg-warm-bg p-2 text-xs text-[#6b7280] whitespace-pre-wrap">
                     {session.session_notes}
                   </p>
                 )}

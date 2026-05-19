@@ -126,19 +126,19 @@ export default async function AssessPage({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
+    <div className="min-h-screen bg-warm-bg">
+      <header className="bg-white shadow-sm">
         <div className="mx-auto max-w-4xl px-4 py-6">
           <Link
             href={`/children/${childId}`}
-            className="text-sm text-blue-600 hover:underline"
+            className="text-sm text-brand hover:underline"
           >
             ← 返回{child.name}的详情
           </Link>
-          <h1 className="mt-2 text-2xl font-bold text-gray-900">
+          <h1 className="mt-2 text-2xl font-bold text-[#374151]">
             ABLLS-R 评估 — {child.name}
           </h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-[#9ca3af]">
             10 个领域共 92 项。每项 0-4 分,允许只评一部分;未选的项不会保存。
           </p>
         </div>
@@ -147,32 +147,32 @@ export default async function AssessPage({ params }: Props) {
       <main className="mx-auto max-w-4xl px-4 py-8">
         <form action={submitAssessment} className="space-y-6">
           {/* 评估元信息 */}
-          <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-lg font-semibold text-gray-800">
+          <section className="rounded-xl border border-[#e8e8e0] bg-white p-6 shadow-sm">
+            <h2 className="mb-4 text-lg font-semibold text-[#374151]">
               本次评估信息
             </h2>
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">
+                <label className="block text-xs font-medium text-[#6b7280] mb-1">
                   评估师姓名
                 </label>
                 <input
                   type="text"
                   name="evaluator_name"
                   defaultValue={me.username}
-                  className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </div>
             </div>
             <div className="mt-3">
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-xs font-medium text-[#6b7280] mb-1">
                 评估总体备注
               </label>
               <textarea
                 name="session_notes"
                 rows={2}
                 placeholder="例如:孩子状态、配合情况、特殊说明..."
-                className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
               />
             </div>
           </section>
@@ -181,21 +181,21 @@ export default async function AssessPage({ params }: Props) {
           {questionnaire?.submitted_at && (
             <details
               open
-              className="rounded-lg border border-amber-200 bg-amber-50/50"
+              className="rounded-xl border border-amber-200 bg-amber-50/50"
             >
               <summary className="cursor-pointer select-none p-5">
-                <span className="text-base font-semibold text-gray-800">
+                <span className="text-base font-semibold text-[#374151]">
                   家长问卷参考
                 </span>
-                <span className="ml-2 text-xs text-gray-500">
+                <span className="ml-2 text-xs text-[#9ca3af]">
                   评估时可对照参考(点击可折叠)
                 </span>
               </summary>
               <div className="space-y-4 px-5 pb-5 text-sm">
                 {/* 家长信息行 */}
                 {(questionnaire.parent_name || questionnaire.contact) && (
-                  <p className="text-gray-700">
-                    <span className="text-gray-500">家长:</span>{" "}
+                  <p className="text-[#6b7280]">
+                    <span className="text-[#9ca3af]">家长:</span>{" "}
                     {questionnaire.parent_name}
                     {questionnaire.relation && `(${questionnaire.relation})`}
                     {questionnaire.contact && ` · ${questionnaire.contact}`}
@@ -209,8 +209,8 @@ export default async function AssessPage({ params }: Props) {
                   <div className="rounded bg-white border border-amber-100 p-3 space-y-1.5">
                     {(questionnaire.child_gender ||
                       questionnaire.child_birth_date) && (
-                      <p className="text-gray-700">
-                        <span className="text-gray-500">孩子:</span>{" "}
+                      <p className="text-[#6b7280]">
+                        <span className="text-[#9ca3af]">孩子:</span>{" "}
                         {[
                           questionnaire.child_gender,
                           ageFromDob(questionnaire.child_birth_date),
@@ -222,8 +222,8 @@ export default async function AssessPage({ params }: Props) {
                       </p>
                     )}
                     {questionnaire.diagnosis && (
-                      <p className="text-gray-700">
-                        <span className="text-gray-500">诊断:</span>{" "}
+                      <p className="text-[#6b7280]">
+                        <span className="text-[#9ca3af]">诊断:</span>{" "}
                         {questionnaire.diagnosis}
                         {(questionnaire.diagnosis_hospital ||
                           questionnaire.diagnosis_date) &&
@@ -248,27 +248,27 @@ export default async function AssessPage({ params }: Props) {
                     </p>
                     {questionnaire.main_reinforcers && (
                       <div>
-                        <p className="text-xs text-gray-600">
+                        <p className="text-xs text-[#6b7280]">
                           主要强化物(测试时可用作奖励):
                         </p>
-                        <p className="whitespace-pre-wrap text-gray-800">
+                        <p className="whitespace-pre-wrap text-[#374151]">
                           {questionnaire.main_reinforcers}
                         </p>
                       </div>
                     )}
                     {questionnaire.top_concerns && (
                       <div>
-                        <p className="text-xs text-gray-600">
+                        <p className="text-xs text-[#6b7280]">
                           家长最关注的问题:
                         </p>
-                        <p className="whitespace-pre-wrap text-gray-800">
+                        <p className="whitespace-pre-wrap text-[#374151]">
                           {questionnaire.top_concerns}
                         </p>
                       </div>
                     )}
                     {questionnaire.allergies && (
-                      <p className="text-gray-800">
-                        <span className="text-xs text-gray-600">
+                      <p className="text-[#374151]">
+                        <span className="text-xs text-[#6b7280]">
                           过敏 / 禁忌:
                         </span>{" "}
                         {questionnaire.allergies}
@@ -287,41 +287,41 @@ export default async function AssessPage({ params }: Props) {
                   <div className="space-y-2">
                     {questionnaire.current_training && (
                       <div>
-                        <p className="text-xs text-gray-500">当前康复训练:</p>
-                        <p className="whitespace-pre-wrap text-gray-700 rounded bg-white border border-amber-100 p-2">
+                        <p className="text-xs text-[#9ca3af]">当前康复训练:</p>
+                        <p className="whitespace-pre-wrap text-[#6b7280] rounded bg-white border border-amber-100 p-2">
                           {questionnaire.current_training}
                         </p>
                       </div>
                     )}
                     {questionnaire.prior_training && (
                       <div>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-[#9ca3af]">
                           之前的训练 / 治疗:
                         </p>
-                        <p className="whitespace-pre-wrap text-gray-700 rounded bg-white border border-amber-100 p-2">
+                        <p className="whitespace-pre-wrap text-[#6b7280] rounded bg-white border border-amber-100 p-2">
                           {questionnaire.prior_training}
                         </p>
                       </div>
                     )}
                     {questionnaire.medication && (
                       <div>
-                        <p className="text-xs text-gray-500">服药情况:</p>
-                        <p className="whitespace-pre-wrap text-gray-700 rounded bg-white border border-amber-100 p-2">
+                        <p className="text-xs text-[#9ca3af]">服药情况:</p>
+                        <p className="whitespace-pre-wrap text-[#6b7280] rounded bg-white border border-amber-100 p-2">
                           {questionnaire.medication}
                         </p>
                       </div>
                     )}
                     {questionnaire.daily_behavior && (
                       <div>
-                        <p className="text-xs text-gray-500">日常表现:</p>
-                        <p className="whitespace-pre-wrap text-gray-700 rounded bg-white border border-amber-100 p-2">
+                        <p className="text-xs text-[#9ca3af]">日常表现:</p>
+                        <p className="whitespace-pre-wrap text-[#6b7280] rounded bg-white border border-amber-100 p-2">
                           {questionnaire.daily_behavior}
                         </p>
                       </div>
                     )}
                     {questionnaire.prior_assessment && (
-                      <p className="text-gray-700">
-                        <span className="text-xs text-gray-500">
+                      <p className="text-[#6b7280]">
+                        <span className="text-xs text-[#9ca3af]">
                           上一次评估:
                         </span>{" "}
                         {questionnaire.prior_assessment}
@@ -329,8 +329,8 @@ export default async function AssessPage({ params }: Props) {
                     )}
                     {questionnaire.parent_expectations && (
                       <div>
-                        <p className="text-xs text-gray-500">家长期望:</p>
-                        <p className="whitespace-pre-wrap text-gray-700 rounded bg-white border border-amber-100 p-2">
+                        <p className="text-xs text-[#9ca3af]">家长期望:</p>
+                        <p className="whitespace-pre-wrap text-[#6b7280] rounded bg-white border border-amber-100 p-2">
                           {questionnaire.parent_expectations}
                         </p>
                       </div>
@@ -342,18 +342,18 @@ export default async function AssessPage({ params }: Props) {
           )}
 
           {/* 评分等级说明 */}
-          <section className="rounded-lg border border-gray-200 bg-blue-50/40 p-5">
-            <h2 className="mb-2 text-base font-semibold text-gray-800">
+          <section className="rounded-xl border border-[#e8e8e0] bg-[#f1f8e9]/40 p-5">
+            <h2 className="mb-2 text-base font-semibold text-[#374151]">
               评分等级
             </h2>
-            <div className="grid gap-1 text-xs text-gray-700 sm:grid-cols-5">
+            <div className="grid gap-1 text-xs text-[#6b7280] sm:grid-cols-5">
               {ABLLS_SCORE_LEVELS.map((lv) => (
                 <div key={lv.value}>
-                  <span className="font-semibold text-gray-900">
+                  <span className="font-semibold text-[#374151]">
                     {lv.value}
                   </span>{" "}
                   - {lv.label}
-                  <p className="text-gray-500">{lv.desc}</p>
+                  <p className="text-[#9ca3af]">{lv.desc}</p>
                 </div>
               ))}
             </div>
@@ -365,47 +365,47 @@ export default async function AssessPage({ params }: Props) {
             return (
               <details
                 key={domain.code}
-                className="rounded-lg border border-gray-200 bg-white shadow-sm"
+                className="rounded-xl border border-[#e8e8e0] bg-white shadow-sm"
               >
-                <summary className="cursor-pointer select-none rounded-lg p-4 hover:bg-gray-50">
-                  <span className="text-base font-semibold text-gray-800">
+                <summary className="cursor-pointer select-none rounded-xl p-4 hover:bg-[#f9fafb]">
+                  <span className="text-base font-semibold text-[#374151]">
                     领域 {domain.code} — {domain.label}
                   </span>
-                  <span className="ml-2 text-xs text-gray-500">
+                  <span className="ml-2 text-xs text-[#9ca3af]">
                     ({items.length} 项)
                   </span>
                 </summary>
-                <div className="border-t border-gray-100 p-4 space-y-4">
+                <div className="border-t border-[#f3f4f6] p-4 space-y-4">
                   {items.map((item) => (
                     <div
                       key={item.id}
-                      className="rounded-md border border-gray-100 p-3"
+                      className="rounded-lg border border-[#f3f4f6] p-3"
                     >
                       <div className="mb-2">
-                        <span className="font-mono text-xs text-gray-500">
+                        <span className="font-mono text-xs text-[#9ca3af]">
                           {item.item_code}
                         </span>
-                        <span className="ml-2 text-sm font-medium text-gray-800">
+                        <span className="ml-2 text-sm font-medium text-[#374151]">
                           {item.name}
                         </span>
                       </div>
-                      <p className="text-xs text-gray-600 mb-2">{item.goal}</p>
+                      <p className="text-xs text-[#6b7280] mb-2">{item.goal}</p>
 
                       {(item.materials || item.procedure) && (
                         <details className="mb-2">
-                          <summary className="cursor-pointer text-xs text-blue-600 hover:underline">
+                          <summary className="cursor-pointer text-xs text-brand hover:underline">
                             测试细节
                           </summary>
-                          <div className="mt-1 space-y-1 rounded bg-gray-50 p-2 text-xs text-gray-700">
+                          <div className="mt-1 space-y-1 rounded bg-warm-bg p-2 text-xs text-[#6b7280]">
                             {item.materials && (
                               <p>
-                                <span className="text-gray-500">材料:</span>{" "}
+                                <span className="text-[#9ca3af]">材料:</span>{" "}
                                 {item.materials}
                               </p>
                             )}
                             {item.procedure && (
                               <p className="whitespace-pre-wrap">
-                                <span className="text-gray-500">程序:</span>{" "}
+                                <span className="text-[#9ca3af]">程序:</span>{" "}
                                 {item.procedure}
                               </p>
                             )}
@@ -414,7 +414,7 @@ export default async function AssessPage({ params }: Props) {
                       )}
 
                       <div className="flex flex-wrap items-center gap-3">
-                        <label className="flex items-center gap-1 text-xs text-gray-500">
+                        <label className="flex items-center gap-1 text-xs text-[#9ca3af]">
                           <input
                             type="radio"
                             name={`score_${item.id}`}
@@ -427,7 +427,7 @@ export default async function AssessPage({ params }: Props) {
                         {[0, 1, 2, 3, 4].map((s) => (
                           <label
                             key={s}
-                            className="flex items-center gap-1 text-xs text-gray-700"
+                            className="flex items-center gap-1 text-xs text-[#6b7280]"
                           >
                             <input
                               type="radio"
@@ -444,7 +444,7 @@ export default async function AssessPage({ params }: Props) {
                         type="text"
                         name={`notes_${item.id}`}
                         placeholder="备注(可选)"
-                        className="mt-2 block w-full rounded border border-gray-200 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="mt-2 block w-full rounded border border-[#f3f4f6] px-2 py-1 text-xs focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                       />
                     </div>
                   ))}
@@ -454,20 +454,20 @@ export default async function AssessPage({ params }: Props) {
           })}
 
           {/* 提交 */}
-          <div className="sticky bottom-4 z-10 flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-md">
+          <div className="sticky bottom-4 z-10 flex items-center gap-3 rounded-xl border border-[#e8e8e0] bg-white p-4 shadow-sm">
             <Link
               href={`/children/${childId}`}
-              className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              className="rounded-lg border border-[#d1d5db] px-4 py-2 text-sm font-medium text-[#6b7280] hover:bg-[#f9fafb]"
             >
               取消
             </Link>
             <button
               type="submit"
-              className="rounded-md bg-blue-600 px-6 py-2 text-sm font-medium text-white hover:bg-blue-700"
+              className="rounded-lg bg-brand px-6 py-2 text-sm font-medium text-white hover:bg-brand-dark transition-all duration-200 active:scale-[0.98]"
             >
               保存评估
             </button>
-            <span className="ml-auto text-xs text-gray-500">
+            <span className="ml-auto text-xs text-[#9ca3af]">
               未选评分的项不会写入数据库,可以分多次评估
             </span>
           </div>

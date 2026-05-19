@@ -69,17 +69,17 @@ export default async function TeacherChatHistoryPage({ params }: Props) {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
+    <div className="min-h-screen bg-warm-bg">
+      <header className="bg-white shadow-sm">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-4">
           <div>
             <Link
               href={`/children/${childId}`}
-              className="text-sm text-blue-600 hover:underline"
+              className="text-sm text-brand hover:underline"
             >
               ← 返回 {child.name} 的详情页
             </Link>
-            <h1 className="mt-1 text-xl font-bold text-gray-900">
+            <h1 className="mt-1 text-xl font-bold text-[#374151]">
               家长与芽宝的聊天记录 · {child.name}
             </h1>
           </div>
@@ -88,8 +88,8 @@ export default async function TeacherChatHistoryPage({ params }: Props) {
 
       <main className="mx-auto max-w-3xl px-4 py-8">
         {allMessages.length === 0 ? (
-          <div className="rounded-lg border border-gray-200 bg-white p-12 text-center">
-            <p className="text-gray-500">该家长尚未使用芽宝</p>
+          <div className="rounded-xl border border-[#e8e8e0] bg-white p-12 text-center">
+            <p className="text-[#9ca3af]">该家长尚未使用芽宝</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -103,8 +103,8 @@ export default async function TeacherChatHistoryPage({ params }: Props) {
                 <div
                   className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
                     msg.role === "user"
-                      ? "bg-blue-600 text-white rounded-br-none"
-                      : "bg-white border border-gray-200 text-gray-800 rounded-bl-none shadow-sm"
+                      ? "bg-brand text-white rounded-br-none"
+                      : "bg-white border border-[#e8e8e0] text-[#374151] rounded-bl-none shadow-sm"
                   }`}
                 >
                   <p className="text-xs opacity-70 mb-1">

@@ -83,31 +83,31 @@ export default async function ParentSchedulePage({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
+    <div className="min-h-screen bg-warm-bg">
+      <header className="bg-white shadow-sm">
         <div className="mx-auto flex max-w-5xl items-start justify-between px-4 py-6">
           <div>
             <Link
               href={`/parent/${childId}`}
-              className="text-sm text-blue-600 hover:underline"
+              className="text-sm text-brand hover:underline"
             >
               ← 返回{child.name}的主页
             </Link>
-            <h1 className="mt-2 text-2xl font-bold text-gray-900">
+            <h1 className="mt-2 text-2xl font-bold text-[#374151]">
               课表 — {child.name}
             </h1>
           </div>
           <div className="flex items-center gap-3 text-sm">
-            <span className="text-gray-700">
+            <span className="text-[#6b7280]">
               {user.username}{" "}
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-[#9ca3af]">
                 ({roleLabel[user.role]})
               </span>
             </span>
             <form action={logout}>
               <button
                 type="submit"
-                className="text-blue-600 hover:underline"
+                className="text-brand hover:underline"
               >
                 退出
               </button>
@@ -117,30 +117,30 @@ export default async function ParentSchedulePage({
       </header>
 
       <main className="mx-auto max-w-5xl px-4 py-8 space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#e8e8e0] bg-white p-4 shadow-sm">
           <div className="flex items-center gap-2">
             <Link
               href={`/parent/${childId}/schedule?week=${prevWeek}`}
-              className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
+              className="rounded-lg border border-[#d1d5db] px-3 py-1.5 text-sm text-[#6b7280] hover:bg-[#f9fafb]"
             >
               ← 上一周
             </Link>
             {!isCurrentWeek && (
               <Link
                 href={`/parent/${childId}/schedule`}
-                className="rounded-md border border-blue-300 bg-blue-50 px-3 py-1.5 text-sm text-blue-700 hover:bg-blue-100"
+                className="rounded-lg border border-brand-light bg-[#f1f8e9] px-3 py-1.5 text-sm text-brand-dark hover:bg-[#e8f5e9]"
               >
                 本周
               </Link>
             )}
             <Link
               href={`/parent/${childId}/schedule?week=${nextWeek}`}
-              className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
+              className="rounded-lg border border-[#d1d5db] px-3 py-1.5 text-sm text-[#6b7280] hover:bg-[#f9fafb]"
             >
               下一周 →
             </Link>
           </div>
-          <p className="text-sm text-gray-600">{weekRangeLabel(weekStart)}</p>
+          <p className="text-sm text-[#6b7280]">{weekRangeLabel(weekStart)}</p>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-7">
@@ -149,38 +149,38 @@ export default async function ParentSchedulePage({
             return (
               <div
                 key={dayKey(b.date)}
-                className={`rounded-lg border bg-white p-3 shadow-sm ${
+                className={`rounded-xl border bg-white p-3 shadow-sm ${
                   isToday
-                    ? "border-blue-300 ring-1 ring-blue-100"
-                    : "border-gray-200"
+                    ? "border-brand-light ring-1 ring-brand/20"
+                    : "border-[#e8e8e0]"
                 }`}
               >
-                <div className="mb-2 flex items-baseline justify-between border-b border-gray-100 pb-2">
-                  <span className="text-sm font-medium text-gray-800">
+                <div className="mb-2 flex items-baseline justify-between border-b border-[#f3f4f6] pb-2">
+                  <span className="text-sm font-medium text-[#374151]">
                     {WEEKDAY_LABELS[idx]}
                   </span>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-[#9ca3af]">
                     {formatMonthDay(b.date)}
                   </span>
                 </div>
                 {b.courses.length === 0 ? (
-                  <p className="text-xs text-gray-300">—</p>
+                  <p className="text-xs text-[#d1d5db]">—</p>
                 ) : (
                   <ul className="space-y-2">
                     {b.courses.map((c) => (
                       <li
                         key={c.id}
-                        className="rounded border border-gray-200 bg-gray-50 p-2"
+                        className="rounded border border-[#e8e8e0] bg-warm-bg p-2"
                       >
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-[#9ca3af]">
                           {formatTimeOnly(c.start_at)} -{" "}
                           {formatEndTime(c.start_at, c.duration_minutes)}
                         </p>
-                        <p className="mt-0.5 text-sm font-medium text-gray-800">
+                        <p className="mt-0.5 text-sm font-medium text-[#374151]">
                           {c.course_name}
                         </p>
                         {c.notes && (
-                          <p className="mt-0.5 text-xs text-gray-500 whitespace-pre-wrap">
+                          <p className="mt-0.5 text-xs text-[#9ca3af] whitespace-pre-wrap">
                             {c.notes}
                           </p>
                         )}

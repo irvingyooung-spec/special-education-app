@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Baby, ArrowRight, LogOut } from "lucide-react";
 import db from "@/lib/db";
+import PageShell from "@/app/components/page-shell";
+import Card from "@/app/components/card";
+import EmptyState from "@/app/components/empty-state";
 import {
   destroyCurrentSession,
   requireRole,
@@ -26,7 +30,6 @@ export default async function ParentHome() {
     child_birth_date: string | null;
   }>;
 
-  // 只绑定了一个孩子就直接跳进去
   if (myChildren.length === 1) {
     redirect(`/parent/${myChildren[0].id}`);
   }
@@ -37,67 +40,74 @@ export default async function ParentHome() {
     redirect("/login");
   }
 
+  const headerAction = (
+    <div className="flex items-center gap-3 text-sm">
+      <span className="text-[#6b7280]">
+        {user.username}{" "}
+        <span className="text-xs text-[#9ca3af]">
+          ({roleLabel[user.role]})
+        </span>
+      </span>
+      <form action={logout}>
+        <button
+          type="submit"
+          className="inline-flex items-center gap-1 text-[#6b7280] hover:text-brand transition-colors"
+        >
+          <LogOut className="h-3.5 w-3.5" />
+          退出
+        </button>
+      </form>
+    </div>
+  );
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
-        <div className="mx-auto flex max-w-3xl items-start justify-between px-4 py-6">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">特教助手</h1>
-            <p className="mt-1 text-sm text-gray-500">家长工作台</p>
-          </div>
-          <div className="flex items-center gap-3 text-sm">
-            <span className="text-gray-700">
-              {user.username}{" "}
-              <span className="text-xs text-gray-500">
-                ({roleLabel[user.role]})
-              </span>
-            </span>
-            <form action={logout}>
-              <button
-                type="submit"
-                className="text-blue-600 hover:underline"
-              >
-                退出
-              </button>
-            </form>
+    <PageShell
+      title={`${user.username} 家长，您好`}
+      subtitle="欢迎来到新芽儿童乐园"
+      action={headerAction}
+      showLogo
+    >
+      {myChildren.length === 0 ? (
+        <EmptyState
+          icon={Baby}
+          title="您的账号尚未绑定孩子"
+          description="请联系老师或管理员，确认账号设置无误后再登录。"
+        />
+      ) : (
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold text-[#374151]">我的孩子</h2>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {myChildren.map((child) => {
+              const age = ageLabel(child.child_birth_date);
+              const meta =
+                [child.child_gender, age].filter(Boolean).join(" · ") ||
+                "基本信息未填写";
+              return (
+                <Link
+                  key={child.id}
+                  href={`/parent/${child.id}`}
+                  className="group rounded-xl border border-[#e8e8e0] bg-white p-5 shadow-sm transition-all duration-200 hover:shadow-md hover:border-brand-light"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="rounded-full bg-[#f1f8e9] p-2.5">
+                        <Baby className="h-5 w-5 text-brand" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-medium text-[#374151]">
+                          {child.name}
+                        </h3>
+                        <p className="mt-0.5 text-sm text-[#9ca3af]">{meta}</p>
+                      </div>
+                    </div>
+                    <ArrowRight className="h-5 w-5 text-[#d1d5db] group-hover:text-brand transition-colors" />
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
-      </header>
-
-      <main className="mx-auto max-w-3xl px-4 py-8">
-        {myChildren.length === 0 ? (
-          <div className="rounded-lg border border-gray-200 bg-white p-12 text-center">
-            <p className="text-gray-700">您的账号尚未绑定孩子</p>
-            <p className="mt-2 text-sm text-gray-500">
-              请联系老师或管理员，确认账号设置无误后再登录。
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-gray-800">我的孩子</h2>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {myChildren.map((child) => {
-                const age = ageLabel(child.child_birth_date);
-                const meta =
-                  [child.child_gender, age].filter(Boolean).join(" · ") ||
-                  "基本信息未填写";
-                return (
-                  <Link
-                    key={child.id}
-                    href={`/parent/${child.id}`}
-                    className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm transition hover:shadow-md"
-                  >
-                    <h3 className="text-lg font-medium text-gray-900">
-                      {child.name}
-                    </h3>
-                    <p className="mt-1 text-sm text-gray-500">{meta}</p>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        )}
-      </main>
-    </div>
+      )}
+    </PageShell>
   );
 }

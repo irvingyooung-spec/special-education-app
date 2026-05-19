@@ -63,13 +63,13 @@ function Row({
   if (!value) return null;
   return (
     <div>
-      <p className="text-xs text-gray-500 mb-0.5">{label}</p>
+      <p className="text-xs text-[#9ca3af] mb-0.5">{label}</p>
       {multiline ? (
-        <p className="rounded bg-gray-50 p-2 text-sm text-gray-700 whitespace-pre-wrap">
+        <p className="rounded bg-warm-bg p-2 text-sm text-[#6b7280] whitespace-pre-wrap">
           {value}
         </p>
       ) : (
-        <p className="text-sm text-gray-800">{value}</p>
+        <p className="text-sm text-[#374151]">{value}</p>
       )}
     </div>
   );
@@ -117,19 +117,19 @@ export default async function ChildQrCodePage({ params }: Props) {
   const dobAge = ageFromDob(q.child_birth_date);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
+    <div className="min-h-screen bg-warm-bg">
+      <header className="bg-white shadow-sm">
         <div className="mx-auto max-w-3xl px-4 py-6">
           <Link
             href={`/children/${childId}`}
-            className="text-sm text-blue-600 hover:underline"
+            className="text-sm text-brand hover:underline"
           >
             ← 返回学生详情
           </Link>
-          <h1 className="mt-2 text-2xl font-bold text-gray-900">
+          <h1 className="mt-2 text-2xl font-bold text-[#374151]">
             家长问卷 — {child.name}
           </h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-[#9ca3af]">
             让家长扫码填写问卷,或把下方链接发给家长
           </p>
         </div>
@@ -137,18 +137,18 @@ export default async function ChildQrCodePage({ params }: Props) {
 
       <main className="mx-auto max-w-3xl px-4 py-8 space-y-6">
         {/* 二维码 */}
-        <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <section className="rounded-xl border border-[#e8e8e0] bg-white p-6 shadow-sm">
           <div className="flex flex-col items-center">
             <div
-              className="rounded-md border border-gray-200 bg-white p-2"
+              className="rounded-lg border border-[#e8e8e0] bg-white p-2"
               dangerouslySetInnerHTML={{ __html: qrSvg }}
             />
-            <p className="mt-4 text-xs text-gray-500">用手机微信 / 相机扫码</p>
+            <p className="mt-4 text-xs text-[#9ca3af]">用手机微信 / 相机扫码</p>
           </div>
 
-          <div className="mt-6 rounded-md bg-gray-50 p-3">
-            <p className="text-xs text-gray-500 mb-1">问卷链接:</p>
-            <p className="text-sm text-gray-800 break-all font-mono">
+          <div className="mt-6 rounded-lg bg-warm-bg p-3">
+            <p className="text-xs text-[#9ca3af] mb-1">问卷链接:</p>
+            <p className="text-sm text-[#374151] break-all font-mono">
               {fullUrl}
             </p>
           </div>
@@ -156,20 +156,20 @@ export default async function ChildQrCodePage({ params }: Props) {
 
         {/* 提交状态 / 内容 */}
         {!q.submitted_at ? (
-          <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-gray-800">提交状态</h2>
-            <p className="mt-3 text-sm text-gray-400">家长尚未提交问卷</p>
+          <section className="rounded-xl border border-[#e8e8e0] bg-white p-6 shadow-sm">
+            <h2 className="text-lg font-semibold text-[#374151]">提交状态</h2>
+            <p className="mt-3 text-sm text-[#d1d5db]">家长尚未提交问卷</p>
           </section>
         ) : (
           <>
-            <div className="rounded-md border border-green-200 bg-green-50 px-4 py-2 text-sm text-green-800">
+            <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-2 text-sm text-green-800">
               ✓ 家长已于 {new Date(q.submitted_at).toLocaleString("zh-CN")} 提交
             </div>
 
             {/* 一、家长信息 */}
             {(q.parent_name || q.relation || q.contact) && (
-              <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                <h2 className="mb-3 text-base font-semibold text-gray-800">
+              <section className="rounded-xl border border-[#e8e8e0] bg-white p-6 shadow-sm">
+                <h2 className="mb-3 text-base font-semibold text-[#374151]">
                   一、家长信息
                 </h2>
                 <div className="grid gap-3 sm:grid-cols-2">
@@ -182,8 +182,8 @@ export default async function ChildQrCodePage({ params }: Props) {
 
             {/* 二、孩子基本信息 */}
             {(q.child_gender || q.child_birth_date) && (
-              <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                <h2 className="mb-3 text-base font-semibold text-gray-800">
+              <section className="rounded-xl border border-[#e8e8e0] bg-white p-6 shadow-sm">
+                <h2 className="mb-3 text-base font-semibold text-[#374151]">
                   二、孩子基本信息
                 </h2>
                 <div className="grid gap-3 sm:grid-cols-3">
@@ -199,8 +199,8 @@ export default async function ChildQrCodePage({ params }: Props) {
 
             {/* 三、诊断信息 */}
             {(q.diagnosis || q.diagnosis_hospital || q.diagnosis_date) && (
-              <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                <h2 className="mb-3 text-base font-semibold text-gray-800">
+              <section className="rounded-xl border border-[#e8e8e0] bg-white p-6 shadow-sm">
+                <h2 className="mb-3 text-base font-semibold text-[#374151]">
                   三、诊断信息
                 </h2>
                 <div className="space-y-3">
@@ -218,8 +218,8 @@ export default async function ChildQrCodePage({ params }: Props) {
               q.prior_training ||
               q.medication ||
               q.allergies) && (
-              <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                <h2 className="mb-3 text-base font-semibold text-gray-800">
+              <section className="rounded-xl border border-[#e8e8e0] bg-white p-6 shadow-sm">
+                <h2 className="mb-3 text-base font-semibold text-[#374151]">
                   四、健康与干预
                 </h2>
                 <div className="space-y-3">
@@ -243,8 +243,8 @@ export default async function ChildQrCodePage({ params }: Props) {
             {(q.daily_behavior ||
               q.main_reinforcers ||
               q.prior_assessment) && (
-              <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                <h2 className="mb-3 text-base font-semibold text-gray-800">
+              <section className="rounded-xl border border-[#e8e8e0] bg-white p-6 shadow-sm">
+                <h2 className="mb-3 text-base font-semibold text-[#374151]">
                   五、孩子的特点
                 </h2>
                 <div className="space-y-3">
@@ -261,8 +261,8 @@ export default async function ChildQrCodePage({ params }: Props) {
 
             {/* 六、关注与期望 */}
             {(q.top_concerns || q.parent_expectations) && (
-              <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                <h2 className="mb-3 text-base font-semibold text-gray-800">
+              <section className="rounded-xl border border-[#e8e8e0] bg-white p-6 shadow-sm">
+                <h2 className="mb-3 text-base font-semibold text-[#374151]">
                   六、关注与期望
                 </h2>
                 <div className="space-y-3">
