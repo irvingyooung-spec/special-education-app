@@ -245,6 +245,7 @@ npm install sonner
 ---
 
 ## 补充内容区
+在所有页头位置放上这个LOGO：<img width="1329" height="605" alt="image" src="https://github.com/user-attachments/assets/16504936-26cd-48ee-8626-295230350220" />
 
 ### [用户可在此添加自己的补充]
 
