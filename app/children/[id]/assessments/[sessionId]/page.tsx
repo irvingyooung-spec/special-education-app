@@ -45,6 +45,8 @@ export default async function AssessmentSessionPage({
     .get(sessionId, childId) as SessionRow | undefined;
   if (!session) notFound();
 
+  const isDraft = session.status === "draft";
+
   const scores = getScoresForSession(sessionId);
   const summary = summarizeByDomain(scores);
   const report = getReportForSession(sessionId);
@@ -91,6 +93,11 @@ export default async function AssessmentSessionPage({
             {new Date(session.created_at).toLocaleString("zh-CN")}
             {session.evaluator_name && ` · 评估师 ${session.evaluator_name}`}
             {" · "}共评 {scores.length} / 92 项
+            {isDraft && (
+              <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
+                草稿
+              </span>
+            )}
           </p>
         </div>
       </header>
@@ -119,72 +126,96 @@ export default async function AssessmentSessionPage({
           </section>
         )}
 
-        {/* 芽宝评估报告 */}
-        <section className="rounded-xl border border-[#c5e1a5] bg-[#f1f8e9]/50 p-6 shadow-sm">
-          <div className="flex items-start justify-between mb-3">
-            <div>
-              <h2 className="text-lg font-semibold text-[#374151]">
-                芽宝评估报告草稿
-              </h2>
-              <p className="mt-1 text-xs text-[#9ca3af]">
-                由 {aiModelName} 基于本次得分 + 家长问卷生成。
-                <strong className="text-brand-dark">老师必须人工审核后才能发布给家长</strong>;
-                芽宝不提供医学诊断与用药建议。
-              </p>
+        {/* 芽宝评估报告 — draft 不显示 */}
+        {isDraft ? (
+          <section className="rounded-xl border border-amber-200 bg-amber-50/50 p-6 shadow-sm">
+            <div className="flex items-start justify-between mb-3">
+              <div>
+                <h2 className="text-lg font-semibold text-[#374151]">
+                  草稿状态
+                </h2>
+                <p className="mt-1 text-xs text-[#9ca3af]">
+                  本次评估尚未提交。提交后才能生成 AI 评估报告。
+                </p>
+              </div>
+              <Link
+                href={`/children/${childId}/assess`}
+                className="rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-dark transition-all duration-200 active:scale-[0.98]"
+              >
+                继续编辑 →
+              </Link>
             </div>
-            <div className="flex gap-2">
-              {report && (
-                <Link
-                  href={`/children/${childId}/assessments/${sessionId}/report/edit`}
-                  className="rounded-lg border border-[#d1d5db] px-3 py-1.5 text-sm text-[#6b7280] bg-white hover:bg-[#f9fafb]"
-                >
-                  编辑
-                </Link>
-              )}
-              <form action={runGenerate}>
-                <button
-                  type="submit"
-                  className="rounded-lg bg-brand px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-dark disabled:opacity-50 transition-all duration-200 active:scale-[0.98]"
-                >
-                  {report ? "重新生成草稿" : "让芽宝生成报告草稿"}
-                </button>
-              </form>
-            </div>
-          </div>
-
-          {!report ? (
-            <p className="mt-2 text-sm text-[#9ca3af]">
-              还没有生成报告。点击右上角"让芽宝生成报告草稿"按钮(大约需要 15-30 秒)。
+            <p className="text-sm text-[#6b7280]">
+              已评 {scores.length} / 92 项。点击"继续编辑"回到评估页完善评分。
             </p>
-          ) : (
-            <div className="space-y-4">
-              {REPORT_FIELDS.map((f) => {
-                const v = report[f.key];
-                return (
-                  <div
-                    key={f.key}
-                    className="rounded-lg border border-[#dcedc8] bg-white p-3"
+          </section>
+        ) : (
+          <section className="rounded-xl border border-[#c5e1a5] bg-[#f1f8e9]/50 p-6 shadow-sm">
+            <div className="flex items-start justify-between mb-3">
+              <div>
+                <h2 className="text-lg font-semibold text-[#374151]">
+                  芽宝评估报告草稿
+                </h2>
+                <p className="mt-1 text-xs text-[#9ca3af]">
+                  由 {aiModelName} 基于本次得分 + 家长问卷生成。
+                  <strong className="text-brand-dark">老师必须人工审核后才能发布给家长</strong>;
+                  芽宝不提供医学诊断与用药建议。
+                </p>
+              </div>
+              <div className="flex gap-2">
+                {report && (
+                  <Link
+                    href={`/children/${childId}/assessments/${sessionId}/report/edit`}
+                    className="rounded-lg border border-[#d1d5db] px-3 py-1.5 text-sm text-[#6b7280] bg-white hover:bg-[#f9fafb]"
                   >
-                    <p className="text-xs font-semibold text-brand-dark mb-1">
-                      {f.label}
-                    </p>
-                    {v ? (
-                      <p className="text-sm text-[#374151] whitespace-pre-wrap leading-relaxed">
-                        {v}
-                      </p>
-                    ) : (
-                      <p className="text-sm text-[#d1d5db]">未填写</p>
-                    )}
-                  </div>
-                );
-              })}
-              <p className="text-xs text-[#d1d5db] text-right">
-                最后更新:
-                {new Date(report.updated_at).toLocaleString("zh-CN")}
-              </p>
+                    编辑
+                  </Link>
+                )}
+                <form action={runGenerate}>
+                  <button
+                    type="submit"
+                    className="rounded-lg bg-brand px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-dark disabled:opacity-50 transition-all duration-200 active:scale-[0.98]"
+                  >
+                    {report ? "重新生成草稿" : "让芽宝生成报告草稿"}
+                  </button>
+                </form>
+              </div>
             </div>
-          )}
-        </section>
+
+            {!report ? (
+              <p className="mt-2 text-sm text-[#9ca3af]">
+                还没有生成报告。点击右上角"让芽宝生成报告草稿"按钮(大约需要 15-30 秒)。
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {REPORT_FIELDS.map((f) => {
+                  const v = report[f.key];
+                  return (
+                    <div
+                      key={f.key}
+                      className="rounded-lg border border-[#dcedc8] bg-white p-3"
+                    >
+                      <p className="text-xs font-semibold text-brand-dark mb-1">
+                        {f.label}
+                      </p>
+                      {v ? (
+                        <p className="text-sm text-[#374151] whitespace-pre-wrap leading-relaxed">
+                          {v}
+                        </p>
+                      ) : (
+                        <p className="text-sm text-[#d1d5db]">未填写</p>
+                      )}
+                    </div>
+                  );
+                })}
+                <p className="text-xs text-[#d1d5db] text-right">
+                  最后更新:
+                  {new Date(report.updated_at).toLocaleString("zh-CN")}
+                </p>
+              </div>
+            )}
+          </section>
+        )}
 
         {/* 各领域均分汇总 */}
         <section className="rounded-xl border border-[#e8e8e0] bg-white p-6 shadow-sm">

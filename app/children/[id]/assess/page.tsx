@@ -2,21 +2,30 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import db from "@/lib/db";
 import { requireRole } from "@/lib/auth";
-import SubmitButton from "@/app/components/submit-button";
 import {
   ABLLS_DOMAINS,
   ABLLS_SCORE_LEVELS,
   type AbllsItem,
 } from "@/lib/ablls-catalog";
+import {
+  getDraftSession,
+  createDraftSession,
+  getDraftScores,
+  saveDraftScore,
+  submitDraftSession,
+} from "@/lib/assessment";
+import AbllsAssessForm from "@/app/components/ablls-assess-form";
 
 interface Props {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ toast?: string; message?: string }>;
 }
 
-export default async function AssessPage({ params }: Props) {
+export default async function AssessPage({ params, searchParams }: Props) {
   const me = await requireRole("teacher", "admin");
   const { id } = await params;
   const childId = parseInt(id);
+  const search = await searchParams;
 
   const child = db
     .prepare("SELECT id, name FROM children WHERE id = ?")
@@ -24,7 +33,18 @@ export default async function AssessPage({ params }: Props) {
 
   if (!child) notFound();
 
-  // 家长问卷参考(评估时帮老师对照)
+  // 加载已有 draft
+  const draftSession = getDraftSession(childId);
+  const draftScores = draftSession ? getDraftScores(draftSession.id) : [];
+  const draftScoreMap = new Map<
+    number,
+    { score: number; notes: string | null }
+  >();
+  for (const s of draftScores) {
+    draftScoreMap.set(s.item_id, { score: s.score, notes: s.notes });
+  }
+
+  // 家长问卷参考
   const questionnaire = db
     .prepare("SELECT * FROM parent_questionnaires WHERE child_id = ?")
     .get(childId) as
@@ -61,7 +81,7 @@ export default async function AssessPage({ params }: Props) {
     return `${years} 岁`;
   }
 
-  // 92 项目录,按领域分组
+  // 92 项目录
   const allItems = db
     .prepare(
       "SELECT id, domain_code, item_code, name, goal, materials, procedure, order_in_domain FROM ablls_items ORDER BY domain_code, order_in_domain"
@@ -75,6 +95,63 @@ export default async function AssessPage({ params }: Props) {
     itemsByDomain.set(it.domain_code, list);
   }
 
+  const totalItemCount = allItems.length;
+
+  async function saveDraft(formData: FormData) {
+    "use server";
+    const sessionNotes = (
+      (formData.get("session_notes") as string) ?? ""
+    ).trim();
+    const evaluatorName = (
+      (formData.get("evaluator_name") as string) ?? me.username
+    ).trim();
+    const existingDraftId = parseInt(
+      (formData.get("draft_session_id") as string) ?? "0"
+    );
+
+    // 收集评分
+    const scores: Array<{
+      itemId: number;
+      score: number;
+      notes: string | null;
+    }> = [];
+    for (const [key, value] of formData.entries()) {
+      if (key.startsWith("score_")) {
+        const itemId = parseInt(key.replace("score_", ""));
+        const raw = value as string;
+        if (!raw) continue;
+        const score = parseInt(raw);
+        if (Number.isNaN(score) || score < 0 || score > 4) continue;
+        const notes = (formData.get(`notes_${itemId}`) as string) ?? "";
+        scores.push({ itemId, score, notes: notes || null });
+      }
+    }
+
+    // 创建或复用 draft session
+    let sessionId = existingDraftId;
+    if (!sessionId) {
+      sessionId = createDraftSession(
+        childId,
+        me.id,
+        evaluatorName,
+        sessionNotes
+      );
+    } else {
+      db.prepare(
+        `UPDATE assessment_sessions SET evaluator_name = ?, session_notes = ? WHERE id = ?`
+      ).run(evaluatorName, sessionNotes || null, sessionId);
+    }
+
+    // 保存评分
+    for (const s of scores) {
+      saveDraftScore(sessionId, s.itemId, s.score, s.notes);
+    }
+
+    redirect(
+      `/children/${childId}/assess?toast=success&message=${encodeURIComponent("草稿已保存（" + scores.length + " 项）")}`
+    );
+  }
+
   async function submitAssessment(formData: FormData) {
     "use server";
     const sessionNotes = (
@@ -83,47 +160,49 @@ export default async function AssessPage({ params }: Props) {
     const evaluatorName = (
       (formData.get("evaluator_name") as string) ?? me.username
     ).trim();
-
-    const insertSession = db.prepare(
-      `INSERT INTO assessment_sessions (child_id, evaluator_user_id, evaluator_name, session_notes)
-       VALUES (?, ?, ?, ?)`
-    );
-    const insertScore = db.prepare(
-      `INSERT INTO assessment_scores (session_id, item_id, score, notes)
-       VALUES (?, ?, ?, ?)`
+    const existingDraftId = parseInt(
+      (formData.get("draft_session_id") as string) ?? "0"
     );
 
-    const itemIds = db
-      .prepare("SELECT id FROM ablls_items")
-      .all() as Array<{ id: number }>;
-
-    let scoredCount = 0;
-    const tx = db.transaction(() => {
-      const result = insertSession.run(
-        childId,
-        me.id,
-        evaluatorName || me.username,
-        sessionNotes || null
-      );
-      const sessionId = result.lastInsertRowid;
-
-      for (const { id: itemId } of itemIds) {
-        const raw = formData.get(`score_${itemId}`) as string | null;
+    // 收集评分
+    const scores: Array<{
+      itemId: number;
+      score: number;
+      notes: string | null;
+    }> = [];
+    for (const [key, value] of formData.entries()) {
+      if (key.startsWith("score_")) {
+        const itemId = parseInt(key.replace("score_", ""));
+        const raw = value as string;
         if (!raw) continue;
         const score = parseInt(raw);
         if (Number.isNaN(score) || score < 0 || score > 4) continue;
-        const itemNotes = (
-          (formData.get(`notes_${itemId}`) as string) ?? ""
-        ).trim();
-        insertScore.run(sessionId, itemId, score, itemNotes || null);
-        scoredCount++;
+        const notes = (formData.get(`notes_${itemId}`) as string) ?? "";
+        scores.push({ itemId, score, notes: notes || null });
       }
+    }
 
-      return sessionId;
-    });
-    const sessionId = tx();
+    let sessionId = existingDraftId;
+    if (!sessionId) {
+      // 没有 draft，直接创建 completed
+      const result = db.prepare(
+        `INSERT INTO assessment_sessions (child_id, evaluator_user_id, evaluator_name, session_notes, status)
+         VALUES (?, ?, ?, ?, 'completed')`
+      ).run(childId, me.id, evaluatorName, sessionNotes || null);
+      sessionId = Number(result.lastInsertRowid);
+    } else {
+      // 提交已有 draft
+      submitDraftSession(sessionId, sessionNotes || null);
+    }
 
-    redirect(`/children/${childId}/assessments/${sessionId}?toast=success&message=评估已保存`);
+    // 保存评分
+    for (const s of scores) {
+      saveDraftScore(sessionId, s.itemId, s.score, s.notes);
+    }
+
+    redirect(
+      `/children/${childId}/assessments/${sessionId}?toast=success&message=${encodeURIComponent("评估已提交（" + scores.length + " 项）")}`
+    );
   }
 
   return (
@@ -140,13 +219,29 @@ export default async function AssessPage({ params }: Props) {
             ABLLS-R 评估 — {child.name}
           </h1>
           <p className="mt-1 text-sm text-[#9ca3af]">
-            10 个领域共 92 项。每项 0-4 分,允许只评一部分;未选的项不会保存。
+            10 个领域共 92 项。每项 0-4 分，允许只评一部分。
+            {draftSession && (
+              <span className="text-brand-dark ml-1">
+                （当前有草稿：已保存 {draftScores.length} 项）
+              </span>
+            )}
           </p>
         </div>
       </header>
 
       <main className="mx-auto max-w-4xl px-4 py-8">
-        <form action={submitAssessment} className="space-y-6">
+        {search.toast === "success" && (
+          <div className="mb-6 rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-800">
+            {search.message}
+          </div>
+        )}
+
+        <AbllsAssessForm
+          totalItems={totalItemCount}
+          draftSessionId={draftSession?.id ?? null}
+          onSaveDraft={saveDraft}
+          onSubmit={submitAssessment}
+        >
           {/* 评估元信息 */}
           <section className="rounded-xl border border-[#e8e8e0] bg-white p-6 shadow-sm">
             <h2 className="mb-4 text-lg font-semibold text-[#374151]">
@@ -160,7 +255,7 @@ export default async function AssessPage({ params }: Props) {
                 <input
                   type="text"
                   name="evaluator_name"
-                  defaultValue={me.username}
+                  defaultValue={draftSession?.evaluator_name ?? me.username}
                   className="block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </div>
@@ -172,6 +267,7 @@ export default async function AssessPage({ params }: Props) {
               <textarea
                 name="session_notes"
                 rows={2}
+                defaultValue={draftSession?.session_notes ?? ""}
                 placeholder="例如:孩子状态、配合情况、特殊说明..."
                 className="block w-full rounded-lg border border-[#d1d5db] px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
               />
@@ -193,7 +289,6 @@ export default async function AssessPage({ params }: Props) {
                 </span>
               </summary>
               <div className="space-y-4 px-5 pb-5 text-sm">
-                {/* 家长信息行 */}
                 {(questionnaire.parent_name || questionnaire.contact) && (
                   <p className="text-[#6b7280]">
                     <span className="text-[#9ca3af]">家长:</span>{" "}
@@ -203,7 +298,6 @@ export default async function AssessPage({ params }: Props) {
                   </p>
                 )}
 
-                {/* 孩子基本 + 诊断 */}
                 {(questionnaire.child_gender ||
                   questionnaire.child_birth_date ||
                   questionnaire.diagnosis) && (
@@ -239,7 +333,6 @@ export default async function AssessPage({ params }: Props) {
                   </div>
                 )}
 
-                {/* 评估时关键信息:强化物 / 关注问题 / 过敏 */}
                 {(questionnaire.main_reinforcers ||
                   questionnaire.top_concerns ||
                   questionnaire.allergies) && (
@@ -278,7 +371,6 @@ export default async function AssessPage({ params }: Props) {
                   </div>
                 )}
 
-                {/* 背景:训练 / 服药 / 日常 / 上次评估 / 期望 */}
                 {(questionnaire.current_training ||
                   questionnaire.prior_training ||
                   questionnaire.medication ||
@@ -367,6 +459,7 @@ export default async function AssessPage({ params }: Props) {
               <details
                 key={domain.code}
                 className="rounded-xl border border-[#e8e8e0] bg-white shadow-sm"
+                open
               >
                 <summary className="cursor-pointer select-none rounded-xl p-4 hover:bg-[#f9fafb]">
                   <span className="text-base font-semibold text-[#374151]">
@@ -377,97 +470,92 @@ export default async function AssessPage({ params }: Props) {
                   </span>
                 </summary>
                 <div className="border-t border-[#f3f4f6] p-4 space-y-4">
-                  {items.map((item) => (
-                    <div
-                      key={item.id}
-                      className="rounded-lg border border-[#f3f4f6] p-3"
-                    >
-                      <div className="mb-2">
-                        <span className="font-mono text-xs text-[#9ca3af]">
-                          {item.item_code}
-                        </span>
-                        <span className="ml-2 text-sm font-medium text-[#374151]">
-                          {item.name}
-                        </span>
-                      </div>
-                      <p className="text-xs text-[#6b7280] mb-2">{item.goal}</p>
+                  {items.map((item) => {
+                    const draft = draftScoreMap.get(item.id);
+                    const draftScore = draft?.score;
+                    const draftNotes = draft?.notes;
+                    return (
+                      <div
+                        key={item.id}
+                        className="rounded-lg border border-[#f3f4f6] p-3"
+                      >
+                        <div className="mb-2">
+                          <span className="font-mono text-xs text-[#9ca3af]">
+                            {item.item_code}
+                          </span>
+                          <span className="ml-2 text-sm font-medium text-[#374151]">
+                            {item.name}
+                          </span>
+                        </div>
+                        <p className="text-xs text-[#6b7280] mb-2">
+                          {item.goal}
+                        </p>
 
-                      {(item.materials || item.procedure) && (
-                        <details className="mb-2">
-                          <summary className="cursor-pointer text-xs text-brand hover:underline">
-                            测试细节
-                          </summary>
-                          <div className="mt-1 space-y-1 rounded bg-warm-bg p-2 text-xs text-[#6b7280]">
-                            {item.materials && (
-                              <p>
-                                <span className="text-[#9ca3af]">材料:</span>{" "}
-                                {item.materials}
-                              </p>
-                            )}
-                            {item.procedure && (
-                              <p className="whitespace-pre-wrap">
-                                <span className="text-[#9ca3af]">程序:</span>{" "}
-                                {item.procedure}
-                              </p>
-                            )}
-                          </div>
-                        </details>
-                      )}
+                        {(item.materials || item.procedure) && (
+                          <details className="mb-2">
+                            <summary className="cursor-pointer text-xs text-brand hover:underline">
+                              测试细节
+                            </summary>
+                            <div className="mt-1 space-y-1 rounded bg-warm-bg p-2 text-xs text-[#6b7280]">
+                              {item.materials && (
+                                <p>
+                                  <span className="text-[#9ca3af]">材料:</span>{" "}
+                                  {item.materials}
+                                </p>
+                              )}
+                              {item.procedure && (
+                                <p className="whitespace-pre-wrap">
+                                  <span className="text-[#9ca3af]">程序:</span>{" "}
+                                  {item.procedure}
+                                </p>
+                              )}
+                            </div>
+                          </details>
+                        )}
 
-                      <div className="flex flex-wrap items-center gap-3">
-                        <label className="flex items-center gap-1 text-xs text-[#9ca3af]">
-                          <input
-                            type="radio"
-                            name={`score_${item.id}`}
-                            value=""
-                            defaultChecked
-                            className="h-3.5 w-3.5"
-                          />
-                          未评
-                        </label>
-                        {[0, 1, 2, 3, 4].map((s) => (
-                          <label
-                            key={s}
-                            className="flex items-center gap-1 text-xs text-[#6b7280]"
-                          >
+                        <div className="flex flex-wrap items-center gap-3">
+                          <label className="flex items-center gap-1 text-xs text-[#9ca3af]">
                             <input
                               type="radio"
                               name={`score_${item.id}`}
-                              value={s}
+                              value=""
+                              defaultChecked={draftScore === undefined}
                               className="h-3.5 w-3.5"
                             />
-                            {s}
+                            未评
                           </label>
-                        ))}
-                      </div>
+                          {[0, 1, 2, 3, 4].map((s) => (
+                            <label
+                              key={s}
+                              className="flex items-center gap-1 text-xs text-[#6b7280]"
+                            >
+                              <input
+                                type="radio"
+                                name={`score_${item.id}`}
+                                value={s}
+                                defaultChecked={draftScore === s}
+                                className="h-3.5 w-3.5"
+                              />
+                              {s}
+                            </label>
+                          ))}
+                        </div>
 
-                      <input
-                        type="text"
-                        name={`notes_${item.id}`}
-                        placeholder="备注(可选)"
-                        className="mt-2 block w-full rounded border border-[#f3f4f6] px-2 py-1 text-xs focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
-                      />
-                    </div>
-                  ))}
+                        <input
+                          type="text"
+                          name={`notes_${item.id}`}
+                          placeholder="备注(可选)"
+                          defaultValue={draftNotes || ""}
+                          className="mt-2 block w-full rounded border border-[#f3f4f6] px-2 py-1 text-xs focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
               </details>
             );
           })}
-
-          {/* 提交 */}
-          <div className="sticky bottom-4 z-10 flex items-center gap-3 rounded-xl border border-[#e8e8e0] bg-white p-4 shadow-sm">
-            <Link
-              href={`/children/${childId}`}
-              className="rounded-lg border border-[#d1d5db] px-4 py-2 text-sm font-medium text-[#6b7280] hover:bg-[#f9fafb]"
-            >
-              取消
-            </Link>
-            <SubmitButton label="保存评估" loadingLabel="保存中..." />
-            <span className="ml-auto text-xs text-[#9ca3af]">
-              未选评分的项不会写入数据库,可以分多次评估
-            </span>
-          </div>
-        </form>
+        </AbllsAssessForm>
       </main>
     </div>
   );

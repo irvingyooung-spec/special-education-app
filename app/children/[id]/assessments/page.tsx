@@ -57,17 +57,26 @@ export default async function AssessmentsHistoryPage({ params }: Props) {
             const scores = getScoresForSession(session.id);
             const summary = summarizeByDomain(scores);
             const totalScored = scores.length;
+            const isDraft = session.status === "draft";
             return (
-              <Link
+              <div
                 key={session.id}
-                href={`/children/${childId}/assessments/${session.id}`}
-                className="block rounded-xl border border-[#e8e8e0] bg-white p-6 shadow-sm transition hover:shadow-md"
+                className={`rounded-xl border bg-white p-6 shadow-sm transition hover:shadow-md ${
+                  isDraft ? "border-amber-200" : "border-[#e8e8e0]"
+                }`}
               >
                 <div className="mb-4 flex items-center justify-between">
                   <div>
-                    <h3 className="font-medium text-[#374151]">
-                      {new Date(session.created_at).toLocaleString("zh-CN")}
-                    </h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-medium text-[#374151]">
+                        {new Date(session.created_at).toLocaleString("zh-CN")}
+                      </h3>
+                      {isDraft && (
+                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
+                          草稿
+                        </span>
+                      )}
+                    </div>
                     <p className="mt-0.5 text-xs text-[#9ca3af]">
                       {session.evaluator_name
                         ? `评估师 ${session.evaluator_name}`
@@ -76,7 +85,21 @@ export default async function AssessmentsHistoryPage({ params }: Props) {
                       共评 {totalScored} / 92 项
                     </p>
                   </div>
-                  <span className="text-[#d1d5db]">→</span>
+                  {isDraft ? (
+                    <Link
+                      href={`/children/${childId}/assess`}
+                      className="rounded-lg border border-brand-light bg-[#f1f8e9] px-3 py-1.5 text-xs font-medium text-brand-dark hover:bg-[#e8f5e9] transition-colors"
+                    >
+                      继续编辑 →
+                    </Link>
+                  ) : (
+                    <Link
+                      href={`/children/${childId}/assessments/${session.id}`}
+                      className="text-[#d1d5db] hover:text-brand transition-colors"
+                    >
+                      →
+                    </Link>
+                  )}
                 </div>
 
                 <div className="space-y-1.5">
@@ -111,7 +134,7 @@ export default async function AssessmentsHistoryPage({ params }: Props) {
                     {session.session_notes}
                   </p>
                 )}
-              </Link>
+              </div>
             );
           })
         )}

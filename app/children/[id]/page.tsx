@@ -10,6 +10,7 @@ import {
   Plus,
   Sprout,
   Trash2,
+  Eye,
 } from "lucide-react";
 import db from "@/lib/db";
 import PageShell from "@/app/components/page-shell";
@@ -22,6 +23,12 @@ import {
   getScoresForSession,
   summarizeByDomain,
 } from "@/lib/assessment";
+import {
+  getSessionsForChild as getCpepSessions,
+  summarizeByDomain as summarizeCpepByDomain,
+  getScoresForSession as getCpepScores,
+} from "@/lib/cpep";
+import { CPEP_DOMAINS } from "@/lib/cpep-catalog";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -76,6 +83,13 @@ export default async function ChildDetailPage({ params }: Props) {
       )
       .get(childId) as { count: number }
   ).count;
+
+  // CPEP data
+  const cpepSessions = getCpepSessions(childId);
+  const latestCpepSession = cpepSessions[0] ?? null;
+  const cpepSummary = latestCpepSession
+    ? summarizeCpepByDomain(getCpepScores(latestCpepSession.id))
+    : null;
 
   async function deleteChild() {
     "use server";
@@ -156,9 +170,9 @@ export default async function ChildDetailPage({ params }: Props) {
           )}
         </Card>
 
-        {/* 最新评估 */}
+        {/* ABLLS-R 评估 */}
         <Card
-          title={`最新评估${sessionCount > 0 ? ` (共 ${sessionCount} 次)` : ""}`}
+          title={`ABLLS-R${sessionCount > 0 ? ` (共 ${sessionCount} 次)` : ""}`}
           icon={ClipboardList}
           action={
             <div className="flex gap-2">
@@ -168,7 +182,7 @@ export default async function ChildDetailPage({ params }: Props) {
                   className="inline-flex items-center gap-1 rounded-lg border border-[#d1d5db] px-3 py-1.5 text-sm text-[#374151] bg-white hover:bg-[#f9fafb] transition-colors"
                 >
                   <History className="h-3.5 w-3.5" />
-                  历史记录
+                  历史
                 </Link>
               )}
               <Link
@@ -176,7 +190,7 @@ export default async function ChildDetailPage({ params }: Props) {
                 className="inline-flex items-center gap-1 rounded-lg bg-brand px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-dark transition-all duration-200 active:scale-[0.98]"
               >
                 <Plus className="h-3.5 w-3.5" />
-                {latestSession ? "新建评估" : "开始评估"}
+                {latestSession ? "新建" : "开始"}
               </Link>
             </div>
           }
@@ -228,6 +242,78 @@ export default async function ChildDetailPage({ params }: Props) {
             </div>
           ) : (
             <p className="text-[#d1d5db] text-sm">尚未进行评估</p>
+          )}
+        </Card>
+
+        {/* CPEP 评估 */}
+        <Card
+          title={`CPEP${cpepSessions.length > 0 ? ` (共 ${cpepSessions.length} 次)` : ""}`}
+          icon={Eye}
+          action={
+            <div className="flex gap-2">
+              {cpepSessions.length > 0 && (
+                <Link
+                  href={`/children/${childId}/cpeps`}
+                  className="inline-flex items-center gap-1 rounded-lg border border-[#d1d5db] px-3 py-1.5 text-sm text-[#374151] bg-white hover:bg-[#f9fafb] transition-colors"
+                >
+                  <History className="h-3.5 w-3.5" />
+                  历史
+                </Link>
+              )}
+              <Link
+                href={`/children/${childId}/cpep`}
+                className="inline-flex items-center gap-1 rounded-lg bg-[#5c6bc0] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#3f51b5] transition-all duration-200 active:scale-[0.98]"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                {cpepSessions.length > 0 ? "继续" : "开始"}
+              </Link>
+            </div>
+          }
+        >
+          {latestCpepSession && cpepSummary ? (
+            <div className="space-y-3">
+              <p className="text-xs text-[#9ca3af]">
+                评估于{" "}
+                {new Date(latestCpepSession.created_at).toLocaleString("zh-CN")}
+                {latestCpepSession.evaluator_name &&
+                  ` · 评估师 ${latestCpepSession.evaluator_name}`}
+              </p>
+              <div className="space-y-2">
+                {cpepSummary.slice(0, 4).map((d) => (
+                  <div key={d.code} className="flex items-center gap-3">
+                    <span className="w-24 text-sm text-[#374151]">
+                      {d.label}
+                    </span>
+                    <div className="flex-1 h-2 bg-[#e8e8e0] rounded-full overflow-hidden">
+                      {d.pass_rate !== null && (
+                        <div
+                          className="h-full rounded-full bg-[#5c6bc0]"
+                          style={{ width: `${d.pass_rate}%` }}
+                        />
+                      )}
+                    </div>
+                    <span className="w-16 text-right text-xs text-[#6b7280]">
+                      {d.pass_rate !== null ? `${d.pass_rate}%` : "未评"}
+                    </span>
+                  </div>
+                ))}
+                {cpepSummary.length > 4 && (
+                  <p className="text-xs text-[#9ca3af]">
+                    还有 {cpepSummary.length - 4} 个领域...
+                  </p>
+                )}
+              </div>
+              <div className="pt-1">
+                <Link
+                  href={`/children/${childId}/cpeps/${latestCpepSession.id}`}
+                  className="text-xs text-[#5c6bc0] hover:text-[#3f51b5] transition-colors"
+                >
+                  查看本次评估全部细节 →
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <p className="text-[#d1d5db] text-sm">尚未进行 CPEP 评估</p>
           )}
         </Card>
 

@@ -7,6 +7,7 @@ export type SessionRow = {
   evaluator_user_id: number | null;
   evaluator_name: string | null;
   session_notes: string | null;
+  status: string;
   created_at: string;
   updated_at: string;
 };
@@ -88,6 +89,17 @@ export function getLatestSessionForChild(childId: number): SessionRow | null {
   );
 }
 
+/** 取学生的最新一次已完成评估 session */
+export function getLatestCompletedSessionForChild(childId: number): SessionRow | null {
+  return (
+    (db
+      .prepare(
+        "SELECT * FROM assessment_sessions WHERE child_id = ? AND status = 'completed' ORDER BY created_at DESC LIMIT 1"
+      )
+      .get(childId) as SessionRow | undefined) ?? null
+  );
+}
+
 /** 取学生的所有评估 session 列表(按时间倒序) */
 export function getSessionsForChild(childId: number): SessionRow[] {
   return db
@@ -95,4 +107,74 @@ export function getSessionsForChild(childId: number): SessionRow[] {
       "SELECT * FROM assessment_sessions WHERE child_id = ? ORDER BY created_at DESC"
     )
     .all(childId) as SessionRow[];
+}
+
+// ==================== 草稿系统 ====================
+
+/** 取某儿童的最新 draft session */
+export function getDraftSession(childId: number): SessionRow | null {
+  return (
+    (db
+      .prepare(
+        `SELECT * FROM assessment_sessions
+         WHERE child_id = ? AND status = 'draft'
+         ORDER BY created_at DESC LIMIT 1`
+      )
+      .get(childId) as SessionRow | undefined) ?? null
+  );
+}
+
+/** 创建 draft session */
+export function createDraftSession(
+  childId: number,
+  evaluatorUserId: number,
+  evaluatorName: string,
+  sessionNotes?: string | null
+): number {
+  const result = db
+    .prepare(
+      `INSERT INTO assessment_sessions (child_id, evaluator_user_id, evaluator_name, session_notes, status)
+       VALUES (?, ?, ?, ?, 'draft')`
+    )
+    .run(childId, evaluatorUserId, evaluatorName, sessionNotes || null);
+  return Number(result.lastInsertRowid);
+}
+
+/** 保存/更新单个评分（upsert） */
+export function saveDraftScore(
+  sessionId: number,
+  itemId: number,
+  score: number,
+  notes: string | null
+): void {
+  const existing = db
+    .prepare("SELECT 1 FROM assessment_scores WHERE session_id = ? AND item_id = ?")
+    .get(sessionId, itemId);
+
+  if (existing) {
+    db.prepare(
+      `UPDATE assessment_scores SET score = ?, notes = ? WHERE session_id = ? AND item_id = ?`
+    ).run(score, notes, sessionId, itemId);
+  } else {
+    db.prepare(
+      `INSERT INTO assessment_scores (session_id, item_id, score, notes) VALUES (?, ?, ?, ?)`
+    ).run(sessionId, itemId, score, notes);
+  }
+}
+
+/** 取某 session 的所有得分（仅 item_id + score，用于草稿加载） */
+export function getDraftScores(sessionId: number): Array<{ item_id: number; score: number; notes: string | null }> {
+  return db
+    .prepare("SELECT item_id, score, notes FROM assessment_scores WHERE session_id = ?")
+    .all(sessionId) as Array<{ item_id: number; score: number; notes: string | null }>;
+}
+
+/** 提交 draft session（改为 completed） */
+export function submitDraftSession(
+  sessionId: number,
+  sessionNotes: string | null
+): void {
+  db.prepare(
+    `UPDATE assessment_sessions SET status = 'completed', session_notes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`
+  ).run(sessionNotes, sessionId);
 }

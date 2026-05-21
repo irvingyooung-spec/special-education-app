@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import fs from "fs";
 import path from "path";
 import { ABLLS_ITEMS } from "./ablls-catalog";
+import { CPEP_ITEMS } from "./cpep-catalog";
 
 // 数据库文件路径
 const DB_DIR = path.join(process.cwd(), "data");
@@ -174,6 +175,56 @@ db.exec(`
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (conversation_id) REFERENCES chat_conversations(id) ON DELETE CASCADE
   );
+
+  -- CPEP 评估系统
+  CREATE TABLE IF NOT EXISTS cpep_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    domain_code TEXT NOT NULL,
+    item_code TEXT NOT NULL UNIQUE,
+    subdomain TEXT NOT NULL,
+    name TEXT NOT NULL,
+    goal TEXT NOT NULL,
+    materials TEXT,
+    method TEXT,
+    criteria TEXT,
+    age TEXT,
+    marker TEXT,
+    order_in_domain INTEGER NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS cpep_sessions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    child_id INTEGER NOT NULL,
+    evaluator_user_id INTEGER,
+    evaluator_name TEXT,
+    domain_code TEXT,
+    session_notes TEXT,
+    status TEXT DEFAULT 'completed' CHECK(status IN ('draft', 'completed')),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (child_id) REFERENCES children(id) ON DELETE CASCADE,
+    FOREIGN KEY (evaluator_user_id) REFERENCES users(id) ON DELETE SET NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS cpep_scores (
+    session_id INTEGER NOT NULL,
+    item_id INTEGER NOT NULL,
+    score TEXT NOT NULL CHECK(score IN ('P', 'E', 'F', 'X', 'A', 'M', 'S')),
+    notes TEXT,
+    PRIMARY KEY (session_id, item_id),
+    FOREIGN KEY (session_id) REFERENCES cpep_sessions(id) ON DELETE CASCADE,
+    FOREIGN KEY (item_id) REFERENCES cpep_items(id) ON DELETE CASCADE
+  );
+
+  CREATE TABLE IF NOT EXISTS cpep_reports (
+    session_id INTEGER PRIMARY KEY,
+    domain_analysis TEXT,
+    emotion_analysis TEXT,
+    training_goals TEXT,
+    family_advice TEXT,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (session_id) REFERENCES cpep_sessions(id) ON DELETE CASCADE
+  );
 `);
 
 // 增量迁移：为已存在的旧表补字段（SQLite 没有 ADD COLUMN IF NOT EXISTS，需要先查再加）
@@ -241,6 +292,19 @@ addColumnIfMissing("parent_questionnaires", "main_reinforcers", "TEXT");
 addColumnIfMissing("parent_questionnaires", "allergies", "TEXT");
 addColumnIfMissing("parent_questionnaires", "top_concerns", "TEXT");
 addColumnIfMissing("parent_questionnaires", "prior_assessment", "TEXT");
+
+// ABLLS-R 评估系统添加 status 列（草稿/已完成）
+addColumnIfMissing("assessment_sessions", "status", "TEXT DEFAULT 'completed'");
+
+// 迁移已有数据：旧数据全部视为已完成
+const hasStatusCol = db
+  .prepare("PRAGMA table_info(assessment_sessions)")
+  .all() as { name: string }[];
+if (hasStatusCol.some((c) => c.name === "status")) {
+  db.exec(
+    "UPDATE assessment_sessions SET status = 'completed' WHERE status IS NULL OR status = ''"
+  );
+}
 
 // 课表表结构升级：旧版每条课程绑定单一 child_id，新版改为多对多。
 // 若检测到旧表带 child_id 列，则把数据迁到新结构（schedules 去掉 child_id + 新建 schedule_children）。
@@ -340,6 +404,37 @@ if (itemCount !== ABLLS_ITEMS.length) {
   });
   seedItems();
   console.log(`[seed] 已种入 ABLLS-R 目录:${ABLLS_ITEMS.length} 项`);
+}
+
+// 种入 CPEP 目录
+const cpepItemCount = (
+  db.prepare("SELECT COUNT(*) as c FROM cpep_items").get() as { c: number }
+).c;
+if (cpepItemCount !== CPEP_ITEMS.length) {
+  const seedCpepItems = db.transaction(() => {
+    db.exec("DELETE FROM cpep_items");
+    const insert = db.prepare(
+      `INSERT INTO cpep_items (domain_code, item_code, subdomain, name, goal, materials, method, criteria, age, marker, order_in_domain)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    );
+    for (const it of CPEP_ITEMS) {
+      insert.run(
+        it.domain_code,
+        it.item_code,
+        it.subdomain,
+        it.name,
+        it.goal,
+        it.materials || null,
+        it.method || null,
+        it.criteria || null,
+        it.age || null,
+        it.marker || null,
+        it.order_in_domain
+      );
+    }
+  });
+  seedCpepItems();
+  console.log(`[seed] 已种入 CPEP 目录:${CPEP_ITEMS.length} 项`);
 }
 
 export default db;

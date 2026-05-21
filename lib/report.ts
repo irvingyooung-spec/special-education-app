@@ -7,6 +7,12 @@ import {
 } from "./assessment";
 import { ageLabel } from "./age";
 import { ABLLS_DOMAINS, ABLLS_SCORE_LEVELS } from "./ablls-catalog";
+import {
+  getScoresForSession as getCpepScoresForSession,
+  summarizeByDomain as summarizeCpepByDomain,
+  type CpepScoreRow,
+} from "./cpep";
+import { CPEP_DOMAINS } from "./cpep-catalog";
 
 export type AssessmentReport = {
   session_id: number;
@@ -289,6 +295,217 @@ export function saveReportEdits(
     fields.short_term_goals ?? null,
     fields.mid_term_goals ?? null,
     fields.long_term_goals ?? null,
+    fields.family_advice ?? null
+  );
+}
+
+// ==================== CPEP 报告 ====================
+
+export type CpepAssessmentReport = {
+  session_id: number;
+  domain_analysis: string | null;
+  emotion_analysis: string | null;
+  training_goals: string | null;
+  family_advice: string | null;
+  updated_at: string;
+};
+
+export const CPEP_REPORT_FIELDS: Array<{
+  key: keyof Omit<CpepAssessmentReport, "session_id" | "updated_at">;
+  label: string;
+  placeholder: string;
+}> = [
+  { key: "domain_analysis", label: "发展能力分析", placeholder: "对7个发展领域的分析：优势、薄弱、进步趋势" },
+  { key: "emotion_analysis", label: "情绪行为分析", placeholder: "情绪行为问题的严重程度、主要表现、干预建议" },
+  { key: "training_goals", label: "训练目标", placeholder: "将中间反应项(E)转化为具体可执行的训练目标" },
+  { key: "family_advice", label: "家长配合建议", placeholder: "结合家庭环境和家长能力给出的居家训练建议" },
+];
+
+export function getCpepReportForSession(sessionId: number): CpepAssessmentReport | null {
+  const row = db
+    .prepare("SELECT * FROM cpep_reports WHERE session_id = ?")
+    .get(sessionId) as CpepAssessmentReport | undefined;
+  return row ?? null;
+}
+
+function buildCpepUserPrompt(
+  child: ChildBasics,
+  q: Questionnaire | null,
+  scores: CpepScoreRow[],
+  sessionNotes: string | null
+): string {
+  const summary = summarizeCpepByDomain(scores);
+
+  const lines: string[] = [];
+  lines.push("# 孩子基本信息");
+  lines.push(`姓名:${child.name}`);
+  if (child.child_gender) lines.push(`性别:${child.child_gender}`);
+  if (child.child_birth_date) {
+    const a = ageLabel(child.child_birth_date);
+    lines.push(`出生日期:${child.child_birth_date}${a ? ` (实足 ${a})` : ""}`);
+  }
+  if (child.diagnosis_notes) lines.push(`诊断备注:${child.diagnosis_notes}`);
+  if (child.parent_expectations) lines.push(`家长期望:${child.parent_expectations}`);
+
+  if (q) {
+    lines.push("");
+    lines.push("# 家长问卷信息(填写过的)");
+    if (q.diagnosis) lines.push(`正式诊断:${q.diagnosis}`);
+    if (q.current_training) lines.push(`当前康复训练:${q.current_training}`);
+    if (q.medication) lines.push(`服药情况:${q.medication}`);
+    if (q.allergies) lines.push(`过敏 / 禁忌:${q.allergies}`);
+    if (q.main_reinforcers) lines.push(`主要强化物:${q.main_reinforcers}`);
+    if (q.top_concerns) lines.push(`家长最关注的问题:${q.top_concerns}`);
+    if (q.daily_behavior) lines.push(`日常表现:${q.daily_behavior}`);
+    if (q.prior_assessment) lines.push(`上一次评估:${q.prior_assessment}`);
+  }
+
+  lines.push("");
+  lines.push("# 本次 CPEP 评估结果");
+  if (sessionNotes) lines.push(`评估师备注:${sessionNotes}`);
+  lines.push("");
+
+  // 发展能力领域汇总
+  lines.push("## 发展能力7个领域汇总 (P=通过, E=中间反应, F=不通过, X=不适合)");
+  for (const s of summary) {
+    if (s.code === "emotion_behavior") continue;
+    if (s.p_count + s.e_count + s.f_count + s.x_count === 0) {
+      lines.push(`- ${s.label}:未评`);
+    } else {
+      lines.push(
+        `- ${s.label}:通过${s.p_count}项 / 中间${s.e_count}项 / 不通过${s.f_count}项 / 不适合${s.x_count}项 (通过率:${s.pass_rate ?? "-"}%)`
+      );
+    }
+  }
+
+  // 情绪行为领域汇总
+  const emotionSummary = summary.find((s) => s.code === "emotion_behavior");
+  if (emotionSummary && (emotionSummary.a_count + emotionSummary.m_count + emotionSummary.s_count) > 0) {
+    lines.push("");
+    lines.push("## 情绪与行为领域汇总 (A=没有异常, M=轻度异常, S=重度异常)");
+    lines.push(
+      `- 情绪与行为:正常${emotionSummary.a_count}项 / 轻度${emotionSummary.m_count}项 / 重度${emotionSummary.s_count}项 (正常率:${emotionSummary.pass_rate ?? "-"}%)`
+    );
+  }
+
+  // 中间反应项(E) = 训练目标
+  const eItems = scores.filter((s) => s.score === "E");
+  if (eItems.length > 0) {
+    lines.push("");
+    lines.push(`## 中间反应项(E)共${eItems.length}项 — 可直接转化为训练目标`);
+    for (const item of eItems) {
+      lines.push(`- ${item.name} (${item.goal})`);
+    }
+  }
+
+  return lines.join("\n");
+}
+
+const CPEP_SYSTEM_PROMPT = `你是一位有10年经验的特殊教育评估师，熟悉CPEP(孤独症儿童发展能力评估)和ABA(应用行为分析)干预方法。
+
+接下来用户会发给你一名学生的:
+- 基本信息(姓名、性别、年龄、诊断)
+- 家长问卷里关于强化物、关注问题、过敏、日常表现等的信息
+- 本次CPEP评估各领域汇总(P/E/F/X数量) + 中间反应项清单
+
+你需要根据这些信息，输出一份完整的CPEP评估报告草稿，**严格按下面的JSON格式输出，不要带markdown代码块，不要解释:**
+
+{
+  "domain_analysis": "发展能力分析(对7个发展领域的综合分析：指出2-3个优势领域、2-3个薄弱领域、各领域的进步建议。要写得具体，引用具体的评估项目)",
+  "emotion_analysis": "情绪行为分析(分析情绪行为问题的严重程度、主要表现特征、对应的干预策略建议)",
+  "training_goals": "训练目标(将中间反应项E转化为具体可执行的训练目标，按领域分组，每个目标都要可观测、可量化，注明参考月龄和训练方法)",
+  "family_advice": "家长配合建议(2-4条居家可操作的方法，要结合家长提供的强化物和关注问题，给出具体的居家训练建议)"
+}
+
+重要原则:
+- 全部用中文，温和、专业、可操作。
+- 各字段内不要再嵌套markdown标题或JSON，直接用换行 + 短横线写要点即可。
+- 不要做医学诊断或用药建议，任何医疗相关问题都建议家长咨询专业医生。
+- 强化物 / 过敏 / 关注问题，如果家长问卷里提了，你的建议要明确呼应这些信息。
+- 没评的领域不要瞎编，直接在分析里说"领域X未评估，建议下次补充"即可。
+- 训练目标要具体：写明"在什么情境下、用什么材料、期望儿童做出什么行为、达到什么标准"。`;
+
+export async function generateCpepReportForSession(
+  sessionId: number,
+  childId: number
+): Promise<CpepAssessmentReport> {
+  const child = db
+    .prepare(
+      "SELECT name, child_gender, child_birth_date, diagnosis_notes, parent_expectations FROM children WHERE id = ?"
+    )
+    .get(childId) as ChildBasics | undefined;
+  if (!child) throw new Error("找不到学生记录");
+
+  const session = db
+    .prepare("SELECT session_notes FROM cpep_sessions WHERE id = ?")
+    .get(sessionId) as { session_notes: string | null } | undefined;
+  if (!session) throw new Error("找不到评估记录");
+
+  const q =
+    (db
+      .prepare(
+        `SELECT parent_name, parent_expectations, diagnosis, current_training,
+                medication, allergies, main_reinforcers, top_concerns,
+                daily_behavior, prior_assessment
+         FROM parent_questionnaires WHERE child_id = ?`
+      )
+      .get(childId) as Questionnaire | undefined) ?? null;
+
+  const scores = getCpepScoresForSession(sessionId);
+  if (scores.length === 0) {
+    throw new Error("本次评估还没有打分项，无法生成报告");
+  }
+
+  const userPrompt = buildCpepUserPrompt(child, q, scores, session.session_notes);
+
+  const messages: ChatMessage[] = [
+    { role: "system", content: CPEP_SYSTEM_PROMPT },
+    { role: "user", content: userPrompt },
+  ];
+
+  const text = await generate(messages, { temperature: 0.6, maxTokens: 4000 });
+  const parsed = tryParseReport(text);
+
+  db.prepare(
+    `INSERT INTO cpep_reports
+       (session_id, domain_analysis, emotion_analysis, training_goals, family_advice, updated_at)
+     VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+     ON CONFLICT(session_id) DO UPDATE SET
+       domain_analysis = excluded.domain_analysis,
+       emotion_analysis = excluded.emotion_analysis,
+       training_goals = excluded.training_goals,
+       family_advice = excluded.family_advice,
+       updated_at = CURRENT_TIMESTAMP`
+  ).run(
+    sessionId,
+    parsed.domain_analysis ?? null,
+    parsed.emotion_analysis ?? null,
+    parsed.training_goals ?? null,
+    parsed.family_advice ?? null
+  );
+
+  return getCpepReportForSession(sessionId)!;
+}
+
+export function saveCpepReportEdits(
+  sessionId: number,
+  fields: Partial<Omit<CpepAssessmentReport, "session_id" | "updated_at">>
+) {
+  db.prepare(
+    `INSERT INTO cpep_reports
+       (session_id, domain_analysis, emotion_analysis, training_goals, family_advice, updated_at)
+     VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+     ON CONFLICT(session_id) DO UPDATE SET
+       domain_analysis = excluded.domain_analysis,
+       emotion_analysis = excluded.emotion_analysis,
+       training_goals = excluded.training_goals,
+       family_advice = excluded.family_advice,
+       updated_at = CURRENT_TIMESTAMP`
+  ).run(
+    sessionId,
+    fields.domain_analysis ?? null,
+    fields.emotion_analysis ?? null,
+    fields.training_goals ?? null,
     fields.family_advice ?? null
   );
 }
