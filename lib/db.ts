@@ -4,6 +4,7 @@ import fs from "fs";
 import path from "path";
 import { ABLLS_ITEMS } from "./ablls-catalog";
 import { CPEP_ITEMS } from "./cpep-catalog";
+import { CONNERS_ITEMS } from "./conners-catalog";
 
 // 数据库文件路径
 const DB_DIR = path.join(process.cwd(), "data");
@@ -225,6 +226,63 @@ db.exec(`
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (session_id) REFERENCES cpep_sessions(id) ON DELETE CASCADE
   );
+
+  -- Conners 儿童行为问卷评估系统
+  CREATE TABLE IF NOT EXISTS conners_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    questionnaire_type TEXT NOT NULL,
+    item_number INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    factor_code TEXT,
+    is_hyperactivity_index INTEGER DEFAULT 0,
+    order_in_questionnaire INTEGER NOT NULL,
+    UNIQUE(questionnaire_type, item_number)
+  );
+
+  CREATE TABLE IF NOT EXISTS conners_sessions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    child_id INTEGER NOT NULL,
+    evaluator_user_id INTEGER,
+    evaluator_name TEXT,
+    questionnaire_type TEXT NOT NULL,
+    respondent_role TEXT,
+    respondent_name TEXT,
+    session_notes TEXT,
+    status TEXT DEFAULT 'completed' CHECK(status IN ('draft', 'completed')),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (child_id) REFERENCES children(id) ON DELETE CASCADE,
+    FOREIGN KEY (evaluator_user_id) REFERENCES users(id) ON DELETE SET NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS conners_scores (
+    session_id INTEGER NOT NULL,
+    item_id INTEGER NOT NULL,
+    score INTEGER NOT NULL CHECK(score BETWEEN 0 AND 3),
+    notes TEXT,
+    PRIMARY KEY (session_id, item_id),
+    FOREIGN KEY (session_id) REFERENCES conners_sessions(id) ON DELETE CASCADE,
+    FOREIGN KEY (item_id) REFERENCES conners_items(id) ON DELETE CASCADE
+  );
+
+  CREATE TABLE IF NOT EXISTS conners_reports (
+    session_id INTEGER PRIMARY KEY,
+    factor_analysis TEXT,
+    interpretation TEXT,
+    intervention_suggestions TEXT,
+    family_advice TEXT,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (session_id) REFERENCES conners_sessions(id) ON DELETE CASCADE
+  );
+
+  CREATE TABLE IF NOT EXISTS conners_tokens (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    child_id INTEGER NOT NULL,
+    token TEXT NOT NULL UNIQUE,
+    used_session_id INTEGER,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (child_id) REFERENCES children(id) ON DELETE CASCADE
+  );
 `);
 
 // 增量迁移：为已存在的旧表补字段（SQLite 没有 ADD COLUMN IF NOT EXISTS，需要先查再加）
@@ -442,6 +500,32 @@ if (cpepItemCount !== CPEP_ITEMS.length) {
   });
   seedCpepItems();
   console.log(`[seed] 已种入 CPEP 目录:${CPEP_ITEMS.length} 项`);
+}
+
+// 种入 Conners 目录
+const connersItemCount = (
+  db.prepare("SELECT COUNT(*) as c FROM conners_items").get() as { c: number }
+).c;
+if (connersItemCount !== CONNERS_ITEMS.length) {
+  const seedConnersItems = db.transaction(() => {
+    db.exec("DELETE FROM conners_items");
+    const insert = db.prepare(
+      `INSERT INTO conners_items (questionnaire_type, item_number, name, factor_code, is_hyperactivity_index, order_in_questionnaire)
+       VALUES (?, ?, ?, ?, ?, ?)`
+    );
+    for (const it of CONNERS_ITEMS) {
+      insert.run(
+        it.questionnaire_type,
+        it.item_number,
+        it.name,
+        it.factor_code || null,
+        it.is_hyperactivity_index ? 1 : 0,
+        it.order_in_questionnaire
+      );
+    }
+  });
+  seedConnersItems();
+  console.log(`[seed] 已种入 Conners 目录:${CONNERS_ITEMS.length} 项`);
 }
 
 export default db;

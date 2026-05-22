@@ -11,6 +11,7 @@ import {
   Sprout,
   Trash2,
   Eye,
+  Activity,
 } from "lucide-react";
 import db from "@/lib/db";
 import PageShell from "@/app/components/page-shell";
@@ -30,6 +31,10 @@ import {
   getUnifiedDraftSession,
 } from "@/lib/cpep";
 import { CPEP_DOMAINS } from "@/lib/cpep-catalog";
+import {
+  getSessionsForChild as getConnersSessions,
+  questionnaireLabel,
+} from "@/lib/conners";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -92,6 +97,10 @@ export default async function ChildDetailPage({ params }: Props) {
     ? summarizeCpepByDomain(getCpepScores(latestCpepSession.id))
     : null;
   const hasCpepDraft = !!getUnifiedDraftSession(childId);
+
+  // Conners data
+  const connersSessions = getConnersSessions(childId);
+  const latestConnersSession = connersSessions[0] ?? null;
 
   async function deleteChild() {
     "use server";
@@ -316,6 +325,54 @@ export default async function ChildDetailPage({ params }: Props) {
             </div>
           ) : (
             <p className="text-[#d1d5db] text-sm">尚未进行 CPEP 评估</p>
+          )}
+        </Card>
+
+        {/* Conners 评估 */}
+        <Card
+          title={`Conners${connersSessions.length > 0 ? ` (共 ${connersSessions.length} 次)` : ""}`}
+          icon={Activity}
+          action={
+            <div className="flex gap-2">
+              {connersSessions.length > 0 && (
+                <Link
+                  href={`/children/${childId}/connerss`}
+                  className="inline-flex items-center gap-1 rounded-lg border border-[#d1d5db] px-3 py-1.5 text-sm text-[#374151] bg-white hover:bg-[#f9fafb] transition-colors"
+                >
+                  <History className="h-3.5 w-3.5" />
+                  历史
+                </Link>
+              )}
+              <Link
+                href={`/children/${childId}/conners`}
+                className="inline-flex items-center gap-1 rounded-lg bg-[#e53935] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#c62828] transition-all duration-200 active:scale-[0.98]"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                {connersSessions.length > 0 ? "新建" : "开始"}
+              </Link>
+            </div>
+          }
+        >
+          {latestConnersSession ? (
+            <div className="space-y-3">
+              <p className="text-xs text-[#9ca3af]">
+                最近评估：{questionnaireLabel(latestConnersSession.questionnaire_type)}
+                {" "}
+                {new Date(latestConnersSession.created_at).toLocaleString("zh-CN")}
+                {latestConnersSession.evaluator_name &&
+                  ` · 评估师 ${latestConnersSession.evaluator_name}`}
+              </p>
+              <div className="pt-1">
+                <Link
+                  href={`/children/${childId}/connerss/${latestConnersSession.id}`}
+                  className="text-xs text-[#e53935] hover:text-[#c62828] transition-colors"
+                >
+                  查看本次评估全部细节 →
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <p className="text-[#d1d5db] text-sm">尚未进行 Conners 评估</p>
           )}
         </Card>
 

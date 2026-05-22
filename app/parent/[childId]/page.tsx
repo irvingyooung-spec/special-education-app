@@ -10,6 +10,7 @@ import {
   History,
   LogOut,
   Eye,
+  Activity,
 } from "lucide-react";
 import db from "@/lib/db";
 import PageShell from "@/app/components/page-shell";
@@ -30,6 +31,10 @@ import {
   summarizeByDomain as summarizeCpepByDomain,
   getScoresForSession as getCpepScores,
 } from "@/lib/cpep";
+import {
+  getSessionsForChild as getConnersSessions,
+  questionnaireLabel,
+} from "@/lib/conners";
 
 interface Props {
   params: Promise<{ childId: string }>;
@@ -94,6 +99,10 @@ export default async function ParentChildPage({ params }: Props) {
   const cpepSummary = latestCpepSession
     ? summarizeCpepByDomain(getCpepScores(latestCpepSession.id))
     : null;
+
+  // Conners data
+  const connersSessions = getConnersSessions(childId);
+  const latestConnersSession = connersSessions[0] ?? null;
 
   async function logout() {
     "use server";
@@ -311,6 +320,43 @@ export default async function ParentChildPage({ params }: Props) {
             </div>
           ) : (
             <p className="text-[#d1d5db] text-sm">尚未进行 CPEP 评估</p>
+          )}
+        </Card>
+
+        {/* Conners 评估 */}
+        <Card
+          title={`Conners${connersSessions.length > 0 ? ` (共 ${connersSessions.length} 次)` : ""}`}
+          icon={Activity}
+          action={
+            connersSessions.length > 0 && (
+              <Link
+                href={`/parent/${childId}/connerss`}
+                className="inline-flex items-center gap-1 rounded-lg border border-[#d1d5db] px-3 py-1.5 text-sm text-[#374151] bg-white hover:bg-[#f9fafb] transition-colors"
+              >
+                <History className="h-3.5 w-3.5" />
+                历史记录
+              </Link>
+            )
+          }
+        >
+          {latestConnersSession ? (
+            <div className="space-y-3">
+              <p className="text-xs text-[#9ca3af]">
+                最近评估：{questionnaireLabel(latestConnersSession.questionnaire_type)}
+                {" "}
+                {new Date(latestConnersSession.created_at).toLocaleString("zh-CN")}
+              </p>
+              <div className="pt-1">
+                <Link
+                  href={`/parent/${childId}/connerss/${latestConnersSession.id}`}
+                  className="text-xs text-[#e53935] hover:text-[#c62828] transition-colors"
+                >
+                  查看本次评估全部细节 →
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <p className="text-[#d1d5db] text-sm">尚未进行 Conners 评估</p>
           )}
         </Card>
 

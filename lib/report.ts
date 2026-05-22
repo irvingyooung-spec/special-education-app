@@ -509,3 +509,207 @@ export function saveCpepReportEdits(
     fields.family_advice ?? null
   );
 }
+
+// ==================== Conners 报告 ====================
+
+import {
+  getScoresForSession as getConnersScoresForSession,
+  calculateResults,
+  questionnaireLabel,
+} from "./conners";
+
+export type ConnersReport = {
+  session_id: number;
+  factor_analysis: string | null;
+  interpretation: string | null;
+  intervention_suggestions: string | null;
+  family_advice: string | null;
+  updated_at: string;
+};
+
+export const CONNERS_REPORT_FIELDS: Array<{
+  key: keyof Omit<ConnersReport, "session_id" | "updated_at">;
+  label: string;
+  placeholder: string;
+}> = [
+  { key: "factor_analysis", label: "因子分析", placeholder: "各因子得分与常模对比分析，指出异常领域和程度" },
+  { key: "interpretation", label: "结果解读", placeholder: "综合判断（正常/轻度/中度/重度异常），结合临床表现给出建议" },
+  { key: "intervention_suggestions", label: "干预建议", placeholder: "针对异常因子的具体干预策略（行为管理、学习支持、家庭配合等）" },
+  { key: "family_advice", label: "家长配合建议", placeholder: "结合家庭环境和家长能力给出的居家建议" },
+];
+
+export function getConnersReportForSession(sessionId: number): ConnersReport | null {
+  const row = db
+    .prepare("SELECT * FROM conners_reports WHERE session_id = ?")
+    .get(sessionId) as ConnersReport | undefined;
+  return row ?? null;
+}
+
+function buildConnersUserPrompt(
+  child: ChildBasics,
+  q: Questionnaire | null,
+  sessionId: number,
+  sessionNotes: string | null
+): string {
+  const results = calculateResults(
+    sessionId,
+    child.child_birth_date,
+    child.child_gender
+  );
+
+  const lines: string[] = [];
+  lines.push("# 孩子基本信息");
+  lines.push(`姓名:${child.name}`);
+  if (child.child_gender) lines.push(`性别:${child.child_gender}`);
+  if (child.child_birth_date) {
+    const a = ageLabel(child.child_birth_date);
+    lines.push(`出生日期:${child.child_birth_date}${a ? ` (实足 ${a})` : ""}`);
+  }
+  if (child.diagnosis_notes) lines.push(`诊断备注:${child.diagnosis_notes}`);
+  if (child.parent_expectations) lines.push(`家长期望:${child.parent_expectations}`);
+
+  if (q) {
+    lines.push("");
+    lines.push("# 家长问卷信息(填写过的)");
+    if (q.diagnosis) lines.push(`正式诊断:${q.diagnosis}`);
+    if (q.current_training) lines.push(`当前康复训练:${q.current_training}`);
+    if (q.medication) lines.push(`服药情况:${q.medication}`);
+    if (q.allergies) lines.push(`过敏 / 禁忌:${q.allergies}`);
+    if (q.main_reinforcers) lines.push(`主要强化物:${q.main_reinforcers}`);
+    if (q.top_concerns) lines.push(`家长最关注的问题:${q.top_concerns}`);
+    if (q.daily_behavior) lines.push(`日常表现:${q.daily_behavior}`);
+    if (q.prior_assessment) lines.push(`上一次评估:${q.prior_assessment}`);
+  }
+
+  if (results) {
+    lines.push("");
+    lines.push(`# 本次 Conners ${questionnaireLabel(results.questionnaire_type)}结果`);
+    if (sessionNotes) lines.push(`评估师备注:${sessionNotes}`);
+    lines.push("");
+    lines.push("## 评分统计");
+    lines.push(`- 已评 ${results.scored_count}/${results.total_items} 项`);
+    lines.push(`- 总分: ${results.total_score} 分`);
+    lines.push(`- 均分: ${results.average} 分`);
+    lines.push(`- 严重程度: ${results.severity_label}`);
+    lines.push("");
+    lines.push("## 各因子得分（与常模对比）");
+    for (const f of results.factors) {
+      const normInfo = f.norm_mean !== null && f.norm_sd !== null
+        ? ` 常模 ${f.norm_mean}±${f.norm_sd}，上限 ${Math.round((f.norm_mean + 2 * f.norm_sd) * 100) / 100}`
+        : " 无常模数据";
+      lines.push(`- ${f.label}: 均分 ${f.average} 分 / 总分 ${f.total_score} 分 (${f.is_abnormal ? "**超标**" : "正常"})${normInfo}`);
+    }
+    if (results.hyperactivity_index) {
+      const hi = results.hyperactivity_index;
+      const normInfo = hi.norm_mean !== null && hi.norm_sd !== null
+        ? ` 常模 ${hi.norm_mean}±${hi.norm_sd}，上限 ${Math.round((hi.norm_mean + 2 * hi.norm_sd) * 100) / 100}`
+        : " 无常模数据";
+      lines.push(`- ${hi.label}: 均分 ${hi.average} 分 / 总分 ${hi.total_score} 分 (${hi.is_abnormal ? "**超标**" : "正常"})${normInfo}`);
+    }
+  }
+
+  return lines.join("\n");
+}
+
+const CONNERS_SYSTEM_PROMPT = `你是一位有10年经验的儿童心理与行为评估师，熟悉Conners儿童行为问卷和ADHD筛查评估。
+
+接下来用户会发给你一名学生的:
+- 基本信息(姓名、性别、年龄、诊断)
+- 家长问卷里关于强化物、关注问题、过敏、日常表现等的信息
+- 本次Conners评估结果（各因子得分、与常模对比、多动指数）
+
+你需要根据这些信息，输出一份完整的Conners评估报告草稿，**严格按下面的JSON格式输出，不要带markdown代码块，不要解释:**
+
+{
+  "factor_analysis": "因子分析(对各因子得分与常模的对比分析：指出哪些因子超标、超标程度如何。要引用具体数字，写得专业但易懂。如果父母问卷和教师问卷都有，要对比两者的差异)",
+  "interpretation": "结果解读(综合判断：正常/轻度/中度/重度异常。结合多动指数给出具体建议。明确指出这是筛查工具，不能替代临床诊断，建议何时就医)",
+  "intervention_suggestions": "干预建议(针对异常因子给出具体可操作的干预策略：行为管理方法、学习支持方案、学校配合建议等。每条建议都要具体、可执行)",
+  "family_advice": "家长配合建议(2-4条居家可操作的方法，要结合家长提供的关注问题和家庭环境，给出具体的居家管理建议)"
+}
+
+重要原则:
+- 全部用中文，温和、专业、可操作。
+- 各字段内不要再嵌套markdown标题或JSON，直接用换行 + 短横线写要点即可。
+- 不要做医学诊断或用药建议，任何医疗相关问题都建议家长咨询专业医生。
+- 明确指出Conners量表仅为筛查工具，不能替代临床诊断。
+- 多动指数≥1.5分或超过常模X+2SD时，建议尽快到发育行为科/儿保科/儿童精神科就诊。`;
+
+export async function generateConnersReportForSession(
+  sessionId: number,
+  childId: number
+): Promise<ConnersReport> {
+  const child = db
+    .prepare(
+      "SELECT name, child_gender, child_birth_date, diagnosis_notes, parent_expectations FROM children WHERE id = ?"
+    )
+    .get(childId) as ChildBasics | undefined;
+  if (!child) throw new Error("找不到学生记录");
+
+  const session = db
+    .prepare("SELECT session_notes FROM conners_sessions WHERE id = ?")
+    .get(sessionId) as { session_notes: string | null } | undefined;
+  if (!session) throw new Error("找不到评估记录");
+
+  const q =
+    (db
+      .prepare(
+        `SELECT parent_name, parent_expectations, diagnosis, current_training,
+                medication, allergies, main_reinforcers, top_concerns,
+                daily_behavior, prior_assessment
+         FROM parent_questionnaires WHERE child_id = ?`
+      )
+      .get(childId) as Questionnaire | undefined) ?? null;
+
+  const userPrompt = buildConnersUserPrompt(child, q, sessionId, session.session_notes);
+
+  const messages: ChatMessage[] = [
+    { role: "system", content: CONNERS_SYSTEM_PROMPT },
+    { role: "user", content: userPrompt },
+  ];
+
+  const text = await generate(messages, { temperature: 0.6, maxTokens: 4000 });
+  const parsed = tryParseReport(text);
+
+  db.prepare(
+    `INSERT INTO conners_reports
+       (session_id, factor_analysis, interpretation, intervention_suggestions, family_advice, updated_at)
+     VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+     ON CONFLICT(session_id) DO UPDATE SET
+       factor_analysis = excluded.factor_analysis,
+       interpretation = excluded.interpretation,
+       intervention_suggestions = excluded.intervention_suggestions,
+       family_advice = excluded.family_advice,
+       updated_at = CURRENT_TIMESTAMP`
+  ).run(
+    sessionId,
+    parsed.factor_analysis ?? null,
+    parsed.interpretation ?? null,
+    parsed.intervention_suggestions ?? null,
+    parsed.family_advice ?? null
+  );
+
+  return getConnersReportForSession(sessionId)!;
+}
+
+export function saveConnersReportEdits(
+  sessionId: number,
+  fields: Partial<Omit<ConnersReport, "session_id" | "updated_at">>
+) {
+  db.prepare(
+    `INSERT INTO conners_reports
+       (session_id, factor_analysis, interpretation, intervention_suggestions, family_advice, updated_at)
+     VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+     ON CONFLICT(session_id) DO UPDATE SET
+       factor_analysis = excluded.factor_analysis,
+       interpretation = excluded.interpretation,
+       intervention_suggestions = excluded.intervention_suggestions,
+       family_advice = excluded.family_advice,
+       updated_at = CURRENT_TIMESTAMP`
+  ).run(
+    sessionId,
+    fields.factor_analysis ?? null,
+    fields.interpretation ?? null,
+    fields.intervention_suggestions ?? null,
+    fields.family_advice ?? null
+  );
+}
