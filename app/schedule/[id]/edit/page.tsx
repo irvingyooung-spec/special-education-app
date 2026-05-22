@@ -72,7 +72,7 @@ export default async function EditSchedulePage({ params }: Props) {
     });
     tx();
 
-    redirect(`/schedule?week=${dayKey(start)}&toast=success&message=课程已保存`);
+    redirect(`/schedule?week=${dayKey(start)}&toast=success&message=${encodeURIComponent("课程已保存")}`);
   }
 
   return (

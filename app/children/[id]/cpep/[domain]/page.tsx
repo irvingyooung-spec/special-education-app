@@ -10,15 +10,13 @@ import {
 } from "@/lib/cpep-catalog";
 import {
   getItemsByDomain,
-  getLatestDomainSession,
-  getDomainScores,
-  getDraftSession,
-  createDraftSession,
   getDraftScores,
-  submitDraftSession,
+  getLatestCompletedDomainScores,
+  getUnifiedDraftSession,
+  createUnifiedDraftSession,
   saveDraftScore,
 } from "@/lib/cpep";
-import { Info, Save } from "lucide-react";
+import { Info, Save, ArrowLeft } from "lucide-react";
 import SubmitButton from "@/app/components/submit-button";
 import CpepAutoSave from "@/app/components/cpep-autosave";
 
@@ -55,27 +53,23 @@ export default async function CpepDomainAssessPage({ params }: Props) {
     order_in_domain: number;
   }>;
 
-  // Get last completed session for comparison
-  const lastCompletedSession = getLatestDomainSession(childId, domain);
-  const lastCompletedScores = lastCompletedSession
-    ? getDomainScores(lastCompletedSession.id, domain)
-    : [];
-
+  // Get last completed scores for this domain (prefer unified, fallback legacy)
+  const lastCompletedScores = getLatestCompletedDomainScores(childId, domain);
   const lastScoreMap = new Map<number, string>();
   for (const s of lastCompletedScores) {
     lastScoreMap.set(s.item_id, s.score);
   }
 
-  // Get or create draft session
-  let draftSession = getDraftSession(childId, domain);
+  // Get or create unified draft session
+  let draftSession = getUnifiedDraftSession(childId);
   if (!draftSession) {
-    const draftId = createDraftSession(childId, me.id, me.username, domain);
+    const draftId = createUnifiedDraftSession(childId, me.id, me.username);
     draftSession = {
       id: draftId,
       child_id: childId,
       evaluator_user_id: me.id,
       evaluator_name: me.username,
-      domain_code: domain,
+      domain_code: null,
       session_notes: null,
       status: "draft",
       created_at: new Date().toISOString(),
@@ -83,9 +77,10 @@ export default async function CpepDomainAssessPage({ params }: Props) {
     };
   }
 
-  const draftScores = draftSession
-    ? getDraftScores(draftSession.id)
-    : [];
+  // Filter draft scores for this domain only
+  const allDraftScores = draftSession ? getDraftScores(draftSession.id) : [];
+  const domainItemIds = new Set(items.map((i) => i.id));
+  const draftScores = allDraftScores.filter((s) => domainItemIds.has(s.item_id));
 
   const draftScoreMap = new Map<number, { score: string; notes: string | null }>();
   for (const s of draftScores) {
@@ -106,7 +101,6 @@ export default async function CpepDomainAssessPage({ params }: Props) {
   async function handleAction(formData: FormData) {
     "use server";
 
-    const intent = formData.get("intent") as string;
     const sessionId = parseInt(formData.get("session_id") as string);
     const evaluatorName = (
       (formData.get("evaluator_name") as string) ?? me.username
@@ -116,7 +110,7 @@ export default async function CpepDomainAssessPage({ params }: Props) {
     ).trim();
 
     if (!sessionId) {
-      redirect(`/children/${childId}/cpep/${domain}?toast=error&message=会话ID无效`);
+      redirect(`/children/${childId}/cpep/${domain}?toast=error&message=${encodeURIComponent("会话ID无效")}`);
     }
 
     // Save all scores from the form (fallback if auto-save missed anything)
@@ -136,23 +130,15 @@ export default async function CpepDomainAssessPage({ params }: Props) {
       `UPDATE cpep_sessions SET evaluator_name = ?, session_notes = ? WHERE id = ?`
     ).run(evaluatorName, sessionNotes || null, sessionId);
 
-    if (intent === "save") {
-      redirect(`/children/${childId}/cpep/${domain}?toast=success&message=${encodeURIComponent("评估已保存")}`);
-    }
-
-    // Submit the session
-    submitDraftSession(sessionId, sessionNotes || null);
-
-    redirect(`/children/${childId}/cpeps/${sessionId}?toast=success&message=${encodeURIComponent("评估已提交")}`);
+    redirect(`/children/${childId}/cpep?toast=success&message=${encodeURIComponent("评估已保存")}`);
   }
 
-  // Count drafted scores
   const draftedCount = draftScores.length;
 
   return (
     <PageShell
       backHref={`/children/${childId}/cpep`}
-      backLabel="返回领域列表"
+      backLabel="返回总览"
       title={`${domainInfo.label} 评估`}
       subtitle={`${child.name} · 共 ${items.length} 项 · 已保存 ${draftedCount} 项`}
       maxWidth="lg"
@@ -340,24 +326,23 @@ export default async function CpepDomainAssessPage({ params }: Props) {
           </div>
         ))}
 
-        {/* Submit */}
+        {/* Save and return */}
         <div className="sticky bottom-4 bg-white rounded-xl border border-[#e8e8e0] p-4 shadow-lg">
           <div className="flex items-center justify-between gap-4">
             <p className="text-sm text-[#6b7280]">
               共 {items.length} 项 · 已保存 {draftedCount} 项
             </p>
             <div className="flex items-center gap-2">
-              <button
-                type="submit"
-                name="intent"
-                value="save"
+              <Link
+                href={`/children/${childId}/cpep`}
                 className="rounded-lg border border-[#d1d5db] px-4 py-2 text-sm font-medium text-[#6b7280] hover:bg-[#f9fafb] transition-colors"
               >
-                保存评估
-              </button>
+                <ArrowLeft className="h-4 w-4 inline mr-1" />
+                返回
+              </Link>
               <SubmitButton
-                label="提交评估"
-                loadingLabel="提交中..."
+                label="保存并返回"
+                loadingLabel="保存中..."
                 className="rounded-lg bg-brand px-6 py-2 text-sm font-medium text-white hover:bg-brand-dark transition-all duration-200 active:scale-[0.98]"
               />
             </div>

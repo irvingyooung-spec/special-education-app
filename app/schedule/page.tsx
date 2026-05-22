@@ -118,7 +118,7 @@ export default async function ScheduleHubPage({ searchParams }: Props) {
     });
     tx(childIds);
 
-    redirect(`/schedule?week=${dayKey(start)}&toast=success&message=课程已添加`);
+    redirect(`/schedule?week=${dayKey(start)}&toast=success&message=${encodeURIComponent("课程已添加")}`);
   }
 
   async function deleteCourse(formData: FormData) {

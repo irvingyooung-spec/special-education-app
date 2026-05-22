@@ -136,6 +136,94 @@ export function summarizeByDomain(scores: CpepScoreRow[]): DomainSummary[] {
   });
 }
 
+// ==================== Unified Session (8 domains together) ====================
+
+/** 查找某儿童的 unified draft session（domain_code = NULL） */
+export function getUnifiedDraftSession(childId: number): CpepSessionRow | null {
+  return (
+    (db
+      .prepare(
+        `SELECT * FROM cpep_sessions
+         WHERE child_id = ? AND domain_code IS NULL AND status = 'draft'
+         ORDER BY created_at DESC LIMIT 1`
+      )
+      .get(childId) as CpepSessionRow | undefined) ?? null
+  );
+}
+
+/** 创建 unified draft session（domain_code = NULL） */
+export function createUnifiedDraftSession(
+  childId: number,
+  evaluatorUserId: number,
+  evaluatorName: string
+): number {
+  const existing = getUnifiedDraftSession(childId);
+  if (existing) return existing.id;
+
+  const result = db
+    .prepare(
+      `INSERT INTO cpep_sessions (child_id, evaluator_user_id, evaluator_name, domain_code, status)
+       VALUES (?, ?, ?, NULL, 'draft')`
+    )
+    .run(childId, evaluatorUserId, evaluatorName);
+  return Number(result.lastInsertRowid);
+}
+
+/** 取某儿童的最新 unified completed session */
+export function getLatestUnifiedCompletedSession(childId: number): CpepSessionRow | null {
+  return (
+    (db
+      .prepare(
+        `SELECT * FROM cpep_sessions
+         WHERE child_id = ? AND domain_code IS NULL AND status = 'completed'
+         ORDER BY created_at DESC LIMIT 1`
+      )
+      .get(childId) as CpepSessionRow | undefined) ?? null
+  );
+}
+
+/** 获取一次 session 在 8 个领域的进度 */
+export function getCpepProgress(sessionId: number): Array<{
+  code: string;
+  label: string;
+  scored: number;
+  total: number;
+}> {
+  const scores = getScoresForSession(sessionId);
+  const scoredByDomain = new Map<string, number>();
+  for (const s of scores) {
+    scoredByDomain.set(s.domain_code, (scoredByDomain.get(s.domain_code) ?? 0) + 1);
+  }
+
+  return CPEP_DOMAINS.map((d) => ({
+    code: d.code,
+    label: d.label,
+    scored: scoredByDomain.get(d.code) ?? 0,
+    total: d.item_count,
+  }));
+}
+
+/** 取某领域最新已完成评估的得分（优先 unified completed，fallback 旧按领域） */
+export function getLatestCompletedDomainScores(
+  childId: number,
+  domainCode: string
+): CpepScoreRow[] {
+  const unified = getLatestUnifiedCompletedSession(childId);
+  if (unified) {
+    const scores = getScoresForSession(unified.id).filter(
+      (s) => s.domain_code === domainCode
+    );
+    if (scores.length > 0) return scores;
+  }
+  const oldSession = getLatestCompletedDomainSession(childId, domainCode);
+  if (oldSession) {
+    return getDomainScores(oldSession.id, domainCode);
+  }
+  return [];
+}
+
+// ==================== Legacy per-domain functions (kept for compatibility) ====================
+
 /** 取学生的最新一次 CPEP 评估 session */
 export function getLatestSessionForChild(childId: number): CpepSessionRow | null {
   return (

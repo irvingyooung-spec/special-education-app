@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import db from "@/lib/db";
 import { requireRole } from "@/lib/auth";
 import PageShell from "@/app/components/page-shell";
@@ -60,6 +60,7 @@ export default async function CpepSessionDetailPage({ params }: Props) {
     "use server";
     await requireRole("teacher", "admin");
     await generateCpepReportForSession(sessionIdNum, childId);
+    redirect(`/children/${childId}/cpeps/${sessionIdNum}/report/edit`);
   }
 
   // Collect E items (intermediate response = training targets)

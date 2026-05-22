@@ -35,7 +35,7 @@ export default async function NewChildPage() {
         parent_expectations
       );
 
-    redirect(`/?toast=success&message=学生已添加`);
+    redirect(`/?toast=success&message=${encodeURIComponent("学生已添加")}`);
   }
 
   return (

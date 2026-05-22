@@ -112,32 +112,9 @@ export default function CpepAutoSave({
         });
       });
 
-    // Submit handler: confirm if incomplete + wait for pending saves
+    // Submit handler: wait for pending saves before form submission
     const handleSubmit = (e: SubmitEvent) => {
-      const submitter = e.submitter as HTMLButtonElement | null;
-      const intent = submitter?.value || "submit";
-
-      // 只有"提交评估"才需要确认
-      if (intent === "submit") {
-        // Count scored items
-        const checkedRadios = form.querySelectorAll<HTMLInputElement>(
-          '.auto-save-trigger:checked[value]:not([value=""])'
-        );
-        const scoredCount = checkedRadios.length;
-        const unScored = totalItems - scoredCount;
-
-        if (unScored > 0) {
-          const confirmed = window.confirm(
-            `还有 ${unScored} 项未评估（共 ${totalItems} 项），是否确认提交？\n\n提交后仍可生成 AI 报告。`
-          );
-          if (!confirmed) {
-            e.preventDefault();
-            return;
-          }
-        }
-      }
-
-      // Wait for pending saves
+      // Wait for pending auto-saves to complete before letting the form submit
       if (pendingSaves.size > 0) {
         e.preventDefault();
         if (statusEl) statusEl.textContent = "正在保存...";

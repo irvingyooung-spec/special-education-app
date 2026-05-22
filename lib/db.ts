@@ -306,6 +306,13 @@ if (hasStatusCol.some((c) => c.name === "status")) {
   );
 }
 
+// CPEP 评估系统迁移：清理旧按领域 draft sessions（改造为 unified session 模式）
+// 保留所有 completed 记录用于历史查看，删除所有按领域的 draft（domain_code IS NOT NULL AND status = 'draft'）
+db.exec(`
+  DELETE FROM cpep_sessions
+  WHERE status = 'draft' AND domain_code IS NOT NULL
+`);
+
 // 课表表结构升级：旧版每条课程绑定单一 child_id，新版改为多对多。
 // 若检测到旧表带 child_id 列，则把数据迁到新结构（schedules 去掉 child_id + 新建 schedule_children）。
 const scheduleCols = db

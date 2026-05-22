@@ -17,13 +17,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // Verify the session belongs to the current user
+    // Verify the session exists and is a draft
     const session = db
-      .prepare("SELECT evaluator_user_id FROM cpep_sessions WHERE id = ?")
-      .get(sessionId) as { evaluator_user_id: number } | undefined;
+      .prepare("SELECT status FROM cpep_sessions WHERE id = ?")
+      .get(sessionId) as { status: string } | undefined;
 
-    if (!session || session.evaluator_user_id !== user.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    if (!session || session.status !== 'draft') {
+      return NextResponse.json({ error: "Session not found or not editable" }, { status: 403 });
     }
 
     saveDraftScore(sessionId, itemId, score, notes || null);

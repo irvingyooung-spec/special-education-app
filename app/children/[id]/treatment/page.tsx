@@ -50,7 +50,7 @@ export default async function TreatmentPage({ params }: Props) {
       ).run(childId, content);
     }
 
-    redirect(`/children/${childId}?toast=success&message=治疗计划已保存`);
+    redirect(`/children/${childId}?toast=success&message=${encodeURIComponent("治疗计划已保存")}`);
   }
 
   return (

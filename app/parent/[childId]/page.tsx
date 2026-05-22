@@ -187,7 +187,7 @@ export default async function ParentChildPage({ params }: Props) {
         </Card>
 
         <Card
-          title={`最新评估${sessionCount > 0 ? ` (共 ${sessionCount} 次)` : ""}`}
+          title={`ABLLS-R${sessionCount > 0 ? ` (共 ${sessionCount} 次)` : ""}`}
           icon={ClipboardList}
           action={
             sessionCount > 0 && (

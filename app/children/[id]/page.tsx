@@ -27,6 +27,7 @@ import {
   getSessionsForChild as getCpepSessions,
   summarizeByDomain as summarizeCpepByDomain,
   getScoresForSession as getCpepScores,
+  getUnifiedDraftSession,
 } from "@/lib/cpep";
 import { CPEP_DOMAINS } from "@/lib/cpep-catalog";
 
@@ -90,6 +91,7 @@ export default async function ChildDetailPage({ params }: Props) {
   const cpepSummary = latestCpepSession
     ? summarizeCpepByDomain(getCpepScores(latestCpepSession.id))
     : null;
+  const hasCpepDraft = !!getUnifiedDraftSession(childId);
 
   async function deleteChild() {
     "use server";
@@ -265,7 +267,7 @@ export default async function ChildDetailPage({ params }: Props) {
                 className="inline-flex items-center gap-1 rounded-lg bg-[#5c6bc0] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#3f51b5] transition-all duration-200 active:scale-[0.98]"
               >
                 <Plus className="h-3.5 w-3.5" />
-                {cpepSessions.length > 0 ? "继续" : "开始"}
+                {hasCpepDraft ? "继续评估" : "开始评估"}
               </Link>
             </div>
           }
