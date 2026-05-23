@@ -5,6 +5,7 @@ import path from "path";
 import { ABLLS_ITEMS } from "./ablls-catalog";
 import { CPEP_ITEMS } from "./cpep-catalog";
 import { CONNERS_ITEMS } from "./conners-catalog";
+import { CARS_ITEMS } from "./cars-catalog";
 
 // 数据库文件路径
 const DB_DIR = path.join(process.cwd(), "data");
@@ -283,6 +284,58 @@ db.exec(`
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (child_id) REFERENCES children(id) ON DELETE CASCADE
   );
+
+  -- CARS 孤独症评定量表评估系统
+  -- 迁移:旧表有 item_code UNIQUE 约束,但不同领域可以共用同一项目编号,需要重建
+  DROP TABLE IF EXISTS cars_items;
+  DROP TABLE IF EXISTS cars_scores;
+  DROP TABLE IF EXISTS cars_reports;
+  DROP TABLE IF EXISTS cars_sessions;
+
+  CREATE TABLE IF NOT EXISTS cars_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    domain_code TEXT NOT NULL,
+    item_code TEXT NOT NULL,
+    name TEXT NOT NULL,
+    goal TEXT NOT NULL,
+    materials TEXT,
+    method TEXT,
+    is_observation INTEGER DEFAULT 0,
+    order_in_domain INTEGER NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS cars_sessions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    child_id INTEGER NOT NULL,
+    evaluator_user_id INTEGER,
+    evaluator_name TEXT,
+    session_notes TEXT,
+    status TEXT DEFAULT 'completed' CHECK(status IN ('draft', 'completed')),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (child_id) REFERENCES children(id) ON DELETE CASCADE,
+    FOREIGN KEY (evaluator_user_id) REFERENCES users(id) ON DELETE SET NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS cars_scores (
+    session_id INTEGER NOT NULL,
+    item_id INTEGER NOT NULL,
+    score TEXT NOT NULL CHECK(score IN ('P', 'M', 'F', 'N', 'L', 'S')),
+    notes TEXT,
+    PRIMARY KEY (session_id, item_id),
+    FOREIGN KEY (session_id) REFERENCES cars_sessions(id) ON DELETE CASCADE,
+    FOREIGN KEY (item_id) REFERENCES cars_items(id) ON DELETE CASCADE
+  );
+
+  CREATE TABLE IF NOT EXISTS cars_reports (
+    session_id INTEGER PRIMARY KEY,
+    summary TEXT,
+    pathology_analysis TEXT,
+    training_goals TEXT,
+    family_advice TEXT,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (session_id) REFERENCES cars_sessions(id) ON DELETE CASCADE
+  );
 `);
 
 // 增量迁移：为已存在的旧表补字段（SQLite 没有 ADD COLUMN IF NOT EXISTS，需要先查再加）
@@ -526,6 +579,34 @@ if (connersItemCount !== CONNERS_ITEMS.length) {
   });
   seedConnersItems();
   console.log(`[seed] 已种入 Conners 目录:${CONNERS_ITEMS.length} 项`);
+}
+
+// 种入 CARS 目录
+const carsItemCount = (
+  db.prepare("SELECT COUNT(*) as c FROM cars_items").get() as { c: number }
+).c;
+if (carsItemCount !== CARS_ITEMS.length) {
+  const seedCarsItems = db.transaction(() => {
+    db.exec("DELETE FROM cars_items");
+    const insert = db.prepare(
+      `INSERT INTO cars_items (domain_code, item_code, name, goal, materials, method, is_observation, order_in_domain)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+    );
+    for (const it of CARS_ITEMS) {
+      insert.run(
+        it.domain_code,
+        it.item_code,
+        it.name,
+        it.goal,
+        it.materials || null,
+        it.method || null,
+        it.is_observation ? 1 : 0,
+        it.order_in_domain
+      );
+    }
+  });
+  seedCarsItems();
+  console.log(`[seed] 已种入 CARS 目录:${CARS_ITEMS.length} 项`);
 }
 
 export default db;
