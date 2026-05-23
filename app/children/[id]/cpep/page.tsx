@@ -58,7 +58,7 @@ export default async function CpepPage({ params }: Props) {
   if (!child) notFound();
 
   // Unified draft session
-  let draft = getUnifiedDraftSession(childId);
+  const draft = getUnifiedDraftSession(childId);
 
   // Progress data for each domain
   let domainProgress = CPEP_DOMAINS.map((domain) => ({

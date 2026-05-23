@@ -29,7 +29,7 @@ export default async function ConnersQrCodePage({ params }: Props) {
   }
 
   // 获取或创建 token
-  let tokenRecord = getLatestTokenForChild(childId);
+  const tokenRecord = getLatestTokenForChild(childId);
   let token: string;
   if (!tokenRecord) {
     token = createToken(childId);
@@ -93,7 +93,7 @@ export default async function ConnersQrCodePage({ params }: Props) {
         {usedSession ? (
           <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
             家长已通过此二维码提交了
-            {questionnaireLabel(usedSession.questionnaire_type as any)}，
+            {questionnaireLabel(usedSession.questionnaire_type as "parent" | "teacher")}，
             提交时间：{new Date(usedSession.created_at).toLocaleString("zh-CN")}
             <div className="mt-2">
               <Link

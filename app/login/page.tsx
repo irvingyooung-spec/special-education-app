@@ -128,10 +128,12 @@ export default async function LoginPage({ searchParams }: Props) {
           <SubmitButton label="登录" loadingLabel="登录中..." className="w-full" />
         </form>
 
-        <p className="mt-4 text-center text-xs text-[#9ca3af]">
-          首次使用？默认管理员：
-          <code className="font-mono text-[#6b7280]">admin / changeme123</code>
-        </p>
+        {process.env.NODE_ENV !== "production" && (
+          <p className="mt-4 text-center text-xs text-[#9ca3af]">
+            首次使用？默认管理员：
+            <code className="font-mono text-[#6b7280]">admin / changeme123</code>
+          </p>
+        )}
       </div>
     </div>
   );

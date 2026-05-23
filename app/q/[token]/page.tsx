@@ -153,7 +153,7 @@ export default async function ParentQuestionnairePage({
           </h1>
           <p className="mt-2 text-sm text-[#6b7280] leading-relaxed">
             感谢您配合填写。您提供的信息将帮助老师更全面地了解 {child.name}
-            ,并据此制定个性化的教育计划。除"姓名"和"您的期望"必填外,其余项均可选填。
+            ,并据此制定个性化的教育计划。除&ldquo;姓名&rdquo;和&ldquo;您的期望&rdquo;必填外,其余项均可选填。
           </p>
         </div>
       </header>
@@ -358,7 +358,7 @@ export default async function ParentQuestionnairePage({
                   当前是否接受康复训练?
                 </label>
                 <p className="mt-1 text-xs text-[#9ca3af]">
-                  请说明训练类型和时长,例如:"是,语言治疗,每周 2 次,每次 1 小时" 或 "无"
+                  请说明训练类型和时长,例如:&ldquo;是,语言治疗,每周 2 次,每次 1 小时&rdquo; 或 &ldquo;无&rdquo;
                 </p>
                 <textarea
                   id="current_training"
@@ -392,7 +392,7 @@ export default async function ParentQuestionnairePage({
                   是否服用药物?
                 </label>
                 <p className="mt-1 text-xs text-[#9ca3af]">
-                  请说明药物名称和用药时间;无则填"无"
+                  请说明药物名称和用药时间;无则填&ldquo;无&rdquo;
                 </p>
                 <textarea
                   id="medication"

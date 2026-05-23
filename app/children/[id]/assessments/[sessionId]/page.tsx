@@ -146,7 +146,7 @@ export default async function AssessmentSessionPage({
               </Link>
             </div>
             <p className="text-sm text-[#6b7280]">
-              已评 {scores.length} / 92 项。点击"继续编辑"回到评估页完善评分。
+              已评 {scores.length} / 92 项。点击&ldquo;继续编辑&rdquo;回到评估页完善评分。
             </p>
           </section>
         ) : (
@@ -184,7 +184,7 @@ export default async function AssessmentSessionPage({
 
             {!report ? (
               <p className="mt-2 text-sm text-[#9ca3af]">
-                还没有生成报告。点击右上角"让芽宝生成报告草稿"按钮(大约需要 15-30 秒)。
+                还没有生成报告。点击右上角&ldquo;让芽宝生成报告草稿&rdquo;按钮(大约需要 15-30 秒)。
               </p>
             ) : (
               <div className="space-y-4">

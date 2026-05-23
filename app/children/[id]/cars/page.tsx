@@ -64,7 +64,7 @@ export default async function CarsPage({ params }: Props) {
 
   if (!child) notFound();
 
-  let draft = getDraftSession(childId);
+  const draft = getDraftSession(childId);
 
   let domainProgress = CARS_DOMAINS.map((domain) => ({
     ...domain,

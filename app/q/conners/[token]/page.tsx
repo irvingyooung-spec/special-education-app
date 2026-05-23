@@ -66,7 +66,7 @@ export default async function ParentConnersPage({ params }: Props) {
               感谢您的配合！
             </p>
             <p className="mt-2 text-sm text-green-700">
-              您已于 {new Date(session?.created_at ?? Date.now()).toLocaleString("zh-CN")} 提交了问卷。
+              您已于 {new Date(session?.created_at ?? "1970-01-01").toLocaleString("zh-CN")} 提交了问卷。
             </p>
             <p className="mt-1 text-sm text-green-600">
               评估结果将由老师整理后与您沟通。
@@ -134,10 +134,7 @@ export default async function ParentConnersPage({ params }: Props) {
     redirect(`/q/conners/${token}?submitted=1`);
   }
 
-  // 检查是否刚刚提交
-  const searchParams = new URLSearchParams();
-  // Note: we can't access searchParams in a server component without the prop
-  // We'll handle this by showing the thanks page when token is used
+  // 检查是否刚刚提交: token 已使用时会显示感谢页(见上方 tokenRecord.used_session_id 分支)
 
   return (
     <div className="min-h-screen bg-[#f9fafb]">

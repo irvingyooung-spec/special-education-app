@@ -21,12 +21,20 @@ export async function POST(request: NextRequest) {
     }
 
     const session = db
-      .prepare("SELECT status FROM cars_sessions WHERE id = ?")
-      .get(sessionId) as { status: string } | undefined;
+      .prepare("SELECT status, evaluator_user_id FROM cars_sessions WHERE id = ?")
+      .get(sessionId) as { status: string; evaluator_user_id: number | null } | undefined;
 
     if (!session || session.status !== "draft") {
       return NextResponse.json(
         { error: "Session not found or not editable" },
+        { status: 403 }
+      );
+    }
+
+    // 验证当前用户是否为此 session 的创建者
+    if (session.evaluator_user_id !== user.id) {
+      return NextResponse.json(
+        { error: "无权修改此评估" },
         { status: 403 }
       );
     }

@@ -287,10 +287,8 @@ db.exec(`
 
   -- CARS 孤独症评定量表评估系统
   -- 迁移:旧表有 item_code UNIQUE 约束,但不同领域可以共用同一项目编号,需要重建
+  -- 只删除目录表 cars_items(会在下方重新 seed); 用户数据表绝不可删
   DROP TABLE IF EXISTS cars_items;
-  DROP TABLE IF EXISTS cars_scores;
-  DROP TABLE IF EXISTS cars_reports;
-  DROP TABLE IF EXISTS cars_sessions;
 
   CREATE TABLE IF NOT EXISTS cars_items (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

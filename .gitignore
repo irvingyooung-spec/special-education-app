@@ -37,7 +37,11 @@ yarn-error.log*
 /data/*.db
 /data/*.db-shm
 /data/*.db-wal
+/data/backups/
 !/data/.gitkeep
+
+# test results
+/test-results/
 
 # vercel
 .vercel
